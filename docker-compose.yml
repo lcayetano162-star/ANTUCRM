@@ -1,0 +1,87 @@
+version: '3.8'
+
+# ================================================
+# ANTU CRM - Docker Compose Production
+# Base de datos: DigitalOcean Managed PostgreSQL
+# ================================================
+# Variables REQUERIDAS en .env del servidor:
+#   JWT_SECRET        → openssl rand -hex 32
+#   ENCRYPTION_KEY    → openssl rand -hex 32
+#   SUPER_ADMIN_EMAIL
+#   SUPER_ADMIN_PASSWORD
+#   FRONTEND_URL      → http://TU_IP o https://tudominio.com
+#   CORS_ORIGIN       → mismo valor que FRONTEND_URL
+# ================================================
+
+services:
+  frontend:
+    image: nginx:alpine
+    container_name: antucrm-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - antucrm-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: antucrm-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+
+      # ── Base de datos: DigitalOcean Managed PostgreSQL ──────────────
+      # Usar host PRIVADO (VPC) si el Droplet está en el mismo datacenter
+      # Usar host PÚBLICO si no tienes VPC configurada
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is required}
+
+      # ── Seguridad ───────────────────────────────────────────────────
+      # ⚠️  JWT_SECRET: NUNCA cambiar después del primer deploy
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-24h}
+      # ⚠️  ENCRYPTION_KEY: NUNCA cambiar después de guardar API keys de IA
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+
+      # ── URLs ────────────────────────────────────────────────────────
+      - FRONTEND_URL=${FRONTEND_URL:?FRONTEND_URL is required}
+      - CORS_ORIGIN=${CORS_ORIGIN:?CORS_ORIGIN is required}
+      - API_URL=${API_URL:-http://localhost:3001}
+
+      # ── Super Admin ─────────────────────────────────────────────────
+      - SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL:?SUPER_ADMIN_EMAIL is required}
+      - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD:?SUPER_ADMIN_PASSWORD is required}
+
+      # ── APIs Opcionales ─────────────────────────────────────────────
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-}
+      - EMAIL_WORKER_ENABLED=${EMAIL_WORKER_ENABLED:-true}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+
+    volumes:
+      - api-logs:/app/logs
+      - ./uploads:/app/uploads:rw
+    networks:
+      - antucrm-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health',(r)=>{process.exit(r.statusCode===200?0:1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  api-logs:
+
+networks:
+  antucrm-network:
+    driver: bridge

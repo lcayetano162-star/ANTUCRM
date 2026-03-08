@@ -1,0 +1,116 @@
+{
+  "description": "Ejemplo del caso de uso: 1 equipo a $7,200 + 9 equipos a $8,200 = $81,000 total",
+  "request": {
+    "oportunidadId": "OP-017",
+    "modalidad": "renta",
+    "plazoMeses": 36,
+    "tasaInteresAnual": 16,
+    "items": [
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_estrategico",
+        "precioEquipo": 7200,
+        "cxcBN": 0.008032,
+        "volumenBN": 2000,
+        "cxcColor": 0.09521,
+        "volumenColor": 50000
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      },
+      {
+        "codigo": "EMC00AA",
+        "descripcion": "ImageFORCE 6170 Speed License",
+        "nivelPrecio": "precio_lista",
+        "precioEquipo": 8200,
+        "cxcBN": 0.006532,
+        "volumenBN": 0,
+        "cxcColor": 0.09375,
+        "volumenColor": 0
+      }
+    ]
+  },
+  "expected": {
+    "totalEquipos": 10,
+    "inversionHardware": 81000,
+    "totalPrecioEquipos": 81000
+  }
+}
