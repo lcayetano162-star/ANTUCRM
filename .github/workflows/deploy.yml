@@ -19,22 +19,22 @@ jobs:
           known_hosts: unnecessary
           if_key_exists: replace
 
-      - name: Deploy to Server
+      - name: Create deploy directory
+        run: ssh -o StrictHostKeyChecking=no -T ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo mkdir -p /opt/antucrm && sudo chown ${{ secrets.SERVER_USER }}:${{ secrets.SERVER_USER }} /opt/antucrm"
+
+      - name: Sync files to server
         run: |
-          # Create deploy directory
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /opt/antucrm"
-          
-          # Sync files
           rsync -avz --delete \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='dist' \
             -e "ssh -o StrictHostKeyChecking=no" \
             ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/opt/antucrm/
-          
-          # Deploy
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            cd /opt/antucrm && \
-            docker-compose down || true && \
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no -T ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd /opt/antucrm
+            docker-compose down 2>/dev/null || true
             docker-compose up -d --build
-          "
+          EOF
