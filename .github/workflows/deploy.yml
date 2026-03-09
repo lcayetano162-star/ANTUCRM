@@ -28,13 +28,11 @@ jobs:
           
           # Deploy via SSH
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
+            rm -rf /opt/antucrm && \
             mkdir -p /opt/antucrm && \
-            cd /opt/antucrm && \
-            if [ ! -d .git ]; then \
-              git clone https://github.com/lcayetano162-star/ANTUCRM.git .; \
-            else \
-              git pull origin main; \
-            fi && \
-            docker-compose down && \
+            cd /opt && \
+            git clone https://github.com/lcayetano162-star/ANTUCRM.git antucrm && \
+            cd antucrm && \
+            docker-compose down 2>/dev/null || true && \
             docker-compose up -d --build
           "
