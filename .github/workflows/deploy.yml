@@ -34,11 +34,11 @@ jobs:
             -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
             ./ root@161.35.139.197:/opt/antucrm/
           
-          # 3. Ejecutar docker-compose en servidor
+          # 3. Ejecutar docker compose en servidor (nueva sintaxis)
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@161.35.139.197 "
             cd /opt/antucrm && \
-            docker-compose down 2>/dev/null || true && \
-            docker-compose up -d --build
+            (docker compose down 2>/dev/null || docker-compose down 2>/dev/null || true) && \
+            (docker compose up -d --build 2>/dev/null || docker-compose up -d --build)
           "
           
           echo "✅ Deploy completado"
