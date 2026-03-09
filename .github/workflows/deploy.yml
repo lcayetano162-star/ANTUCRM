@@ -12,29 +12,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
-          if_key_exists: replace
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 161.35.139.197 >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          SERVER="$SERVER_USER@$SERVER_HOST"
-          echo "Deploying to $SERVER"
+          echo "🚀 Iniciando deploy a 161.35.139.197..."
           
-          ssh -o StrictHostKeyChecking=no -T $SERVER "mkdir -p /opt/antucrm"
+          # 1. Crear directorio en servidor
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@161.35.139.197 "mkdir -p /opt/antucrm"
           
+          # 2. Copiar archivos (excluyendo node_modules y git)
           rsync -avz --delete \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='dist' \
-            -e "ssh -o StrictHostKeyChecking=no" \
-            ./ $SERVER:/opt/antucrm/
+            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+            ./ root@161.35.139.197:/opt/antucrm/
           
-          ssh -o StrictHostKeyChecking=no -T $SERVER "cd /opt/antucrm && docker-compose down 2>/dev/null || true"
-          ssh -o StrictHostKeyChecking=no -T $SERVER "cd /opt/antucrm && docker-compose up -d --build"
+          # 3. Ejecutar docker-compose en servidor
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@161.35.139.197 "
+            cd /opt/antucrm && \
+            docker-compose down 2>/dev/null || true && \
+            docker-compose up -d --build
+          "
+          
+          echo "✅ Deploy completado"
