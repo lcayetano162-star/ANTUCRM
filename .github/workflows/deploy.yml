@@ -20,8 +20,12 @@ jobs:
           if_key_exists: replace
 
       - name: Deploy
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          SERVER="${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}"
+          SERVER="$SERVER_USER@$SERVER_HOST"
+          echo "Deploying to $SERVER"
           
           ssh -o StrictHostKeyChecking=no -T $SERVER "mkdir -p /opt/antucrm"
           
