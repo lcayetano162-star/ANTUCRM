@@ -1,0 +1,512 @@
+{
+  "app": {
+    "name": "ANTU CRM",
+    "tagline": "Customer Relationship Management",
+    "copyright": "© 2024 {{company}}. All rights reserved."
+  },
+  "navigation": {
+    "main": "Main",
+    "admin": "Administration",
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "contacts": "Contacts",
+    "companies": "Companies",
+    "opportunities": "Opportunities",
+    "generalQuotes": "General Quote",
+    "quotes": "Quotes",
+    "quotesMFP": "MFP Quote",
+    "inventory": "Inventory",
+    "activities": "Activities",
+    "tasks": "Tasks",
+    "billing": "Billing",
+    "cxc": "Accounts Receivable",
+    "marketing": "Marketing",
+    "reports": "Reports",
+    "vendedores": "Sales Dashboard",
+    "salesPerformance": "Sales & Performance",
+    "clientsContacts": "Clients & Contacts",
+    "finance": "Finance",
+    "operations": "Operations",
+    "performance": "My Performance",
+    "settings": "Settings",
+    "users": "Users",
+    "saasMetrics": "SaaS Metrics",
+    "platformSettings": "Platform Settings",
+    "superAdmin": "Super Admin",
+    "obligations": "Fiscal Obligations"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Enter your credentials to access the CRM",
+      "email": "Email address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot your password?",
+      "submit": "Sign in",
+      "superAdmin": "Super Admin Access",
+      "demoCredentials": "Demo credentials",
+      "errors": {
+        "invalidCredentials": "Invalid credentials. Please try again.",
+        "emailRequired": "Email address is required",
+        "passwordRequired": "Password is required"
+      }
+    },
+    "logout": "Sign out",
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Administrator",
+      "manager": "Manager",
+      "user": "Sales Rep"
+    }
+  },
+  "dashboard": {
+    "greeting": "Hello, {{name}}! 👋",
+    "subtitle": "Here's your daily summary",
+    "sales": {
+      "title": "Sales Dashboard",
+      "subtitle": "Pipeline analysis and performance metrics",
+      "kpis": {
+        "pipeline": "Total Pipeline",
+        "pipelineSub": "Accumulated value across all stages",
+        "target": "Month Closing vs Quota",
+        "conversion": "Conversion Rate",
+        "avgDeal": "Average Deal Size",
+        "vsLastMonth": "vs last month",
+        "ppVsLastMonth": "pp vs last month"
+      },
+      "sections": {
+        "target": "Month Closing vs Quota",
+        "nextMonth": "Next Month Pipeline vs Quota",
+        "nextMonthSub": "Based on projected opportunities for next month",
+        "funnel": "Sales Funnel",
+        "funnelSub": "Pipeline by stage with conversion rates",
+        "aiInsights": "AI Insights",
+        "aiInsightsSub": "Based on your current pipeline",
+        "stages": "Opportunities by Stage",
+        "performance": "Top Performers",
+        "performanceSub": "This month"
+      }
+    },
+    "kpis": {
+      "contacts": "Contacts",
+      "opportunities": "Opportunities",
+      "sales": "Sales",
+      "pendingTasks": "Pending Tasks"
+    },
+    "healthStatus": {
+      "healthy": "Everything is on track",
+      "warning": "Attention required",
+      "critical": "Urgent action needed",
+      "completed": "{{count}} tasks completed",
+      "overdue": "{{count}} task(s) overdue"
+    },
+    "sections": {
+      "myTasks": "My Tasks",
+      "recentActivity": "Recent Activity",
+      "salesPipeline": "Sales Pipeline"
+    }
+  },
+  "contacts": {
+    "title": "Contacts",
+    "subtitle": "Manage your customer and prospect database",
+    "stats": {
+      "total": "Total",
+      "active": "Active",
+      "prospects": "Prospects",
+      "inactive": "Inactive"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "position": "Position",
+      "location": "Location",
+      "status": "Status",
+      "score": "Score"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "prospect": "Prospect"
+    },
+    "actions": {
+      "new": "New contact",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View details"
+    }
+  },
+  "opportunities": {
+    "title": "Opportunities",
+    "subtitle": "Sales pipeline and deal tracking",
+    "stats": {
+      "totalPipeline": "Total Pipeline",
+      "weightedValue": "Weighted Value",
+      "count": "Opportunities",
+      "won": "Won"
+    },
+    "stages": {
+      "new": "New Lead",
+      "contacted": "Contacted",
+      "proposal": "Proposal",
+      "negotiation": "Negotiation",
+      "closedWon": "Closed Won",
+      "closedLost": "Closed Lost"
+    },
+    "fields": {
+      "name": "Name",
+      "company": "Company",
+      "value": "Value",
+      "probability": "Probability",
+      "expectedClose": "Expected Close",
+      "assignedTo": "Assigned to",
+      "aiScore": "AI Score"
+    },
+    "actions": {
+      "new": "New opportunity",
+      "move": "Move",
+      "win": "Mark as won",
+      "lose": "Mark as lost"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Manage your activities and follow-ups",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "overdue": "Overdue",
+      "completed": "Completed"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "overdue": "Overdue"
+    },
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "dueDate": "Due date",
+      "priority": "Priority",
+      "assignedTo": "Assigned to"
+    },
+    "actions": {
+      "new": "New task",
+      "complete": "Complete",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "empty": {
+      "title": "No tasks",
+      "description": "Create your first task to get started"
+    }
+  },
+  "saas": {
+    "metrics": {
+      "title": "SaaS Metrics",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "churn": "Churn Rate",
+      "ltv": "LTV",
+      "cac": "CAC",
+      "nrr": "NRR",
+      "payback": "Payback Period",
+      "magicNumber": "Magic Number"
+    },
+    "pricing": {
+      "title": "Plans & Pricing",
+      "starter": {
+        "name": "Starter",
+        "price": "$29",
+        "period": "/user/month",
+        "description": "Perfect for small teams",
+        "features": [
+          "Up to 5 users",
+          "Basic pipeline",
+          "1,000 contacts",
+          "Email support",
+          "5GB storage"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$79",
+        "period": "/user/month",
+        "description": "For growing teams",
+        "features": [
+          "Unlimited users",
+          "Multiple pipelines",
+          "50,000 contacts",
+          "Priority support",
+          "100GB storage",
+          "Automations",
+          "Advanced reporting"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "",
+        "description": "For large organizations",
+        "features": [
+          "Everything in Professional",
+          "SSO/SAML",
+          "Dedicated API",
+          "Dedicated CSM",
+          "99.99% SLA",
+          "On-premise option",
+          "Custom contracts"
+        ]
+      }
+    },
+    "billing": {
+      "title": "Billing",
+      "invoices": "Invoices",
+      "paymentMethods": "Payment Methods",
+      "subscription": "Subscription",
+      "usage": "Usage",
+      "upgrade": "Upgrade plan",
+      "downgrade": "Downgrade plan"
+    }
+  },
+  "superAdmin": {
+    "title": "Super Admin",
+    "subtitle": "Tenant management and global configuration",
+    "tabs": {
+      "branding": "Branding",
+      "login": "Login",
+      "modules": "Modules",
+      "limits": "Limits",
+      "obligations": "Fiscal Obligations"
+    },
+    "tenants": {
+      "title": "Tenants",
+      "count": "{{count}} registered companies",
+      "new": "New Tenant",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "createModal": {
+        "title": "New Company (Tenant)",
+        "description": "Configure the complete profile of the new company in the Antü ecosystem.",
+        "identityAccess": "Identity and Access",
+        "nameLabel": "Company Name *",
+        "namePlaceholder": "E.g. My International Company",
+        "subdomainLabel": "Access Subdomain *",
+        "subdomainPlaceholder": "mycompany",
+        "businessIdLabel": "Business ID (TAX ID / RNC)",
+        "businessIdPlaceholder": "E.g. 1-01-00000-0",
+        "currencyLabel": "Billing Currency *",
+        "currencyDOP": "DOP - Dominican Peso",
+        "currencyUSD": "USD - US Dollar (International)",
+        "locationWeb": "Location and Web",
+        "websiteLabel": "Website",
+        "websitePlaceholder": "https://www.mycompany.com",
+        "addressLabel": "Main Address",
+        "addressPlaceholder": "Street, City, Country",
+        "primaryContact": "Primary Contact",
+        "fullNameLabel": "Full Name",
+        "fullNamePlaceholder": "Person in charge",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "contact@company.com",
+        "corpPhoneLabel": "Corporate Phone",
+        "phonePlaceholder": "+1 (000) 000-0000",
+        "collectionsContact": "Collections Contact",
+        "collectionsNameLabel": "Collections Manager Name",
+        "collectionsNamePlaceholder": "Name of person responsible",
+        "collectionsEmailLabel": "Collections Email",
+        "collectionsEmailPlaceholder": "ar@company.com",
+        "collectionsPhoneLabel": "Collections Phone",
+        "extLabel": "Ext.",
+        "extPlaceholder": "E.g. 101",
+        "discard": "Discard",
+        "confirmCreate": "Confirm and Create Company"
+      },
+      "createUserModal": {
+        "title": "Create Administrative User",
+        "description": "Register the administrator for {{tenantName}}. They will be able to manage their own team.",
+        "firstNameLabel": "First Name",
+        "firstNamePlaceholder": "E.g. John",
+        "lastNameLabel": "Last Name",
+        "lastNamePlaceholder": "E.g. Doe",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "admin@company.com",
+        "roleLabel": "System Role",
+        "roleValue": "TENANT ADMINISTRATOR",
+        "roleDescription": "Full privileges over this tenant",
+        "cancel": "Cancel",
+        "createAccess": "Create Administrative Access"
+      }
+    },
+    "branding": {
+      "preview": "Preview",
+      "colors": {
+        "primary": "Primary Color",
+        "secondary": "Secondary Color",
+        "accent": "Accent Color"
+      },
+      "loginBackground": "Login Background",
+      "backgroundTypes": {
+        "gradient": "Gradient",
+        "solid": "Solid",
+        "image": "Image"
+      }
+    },
+    "obligations": {
+      "title": "Fiscal Obligations",
+      "subtitle": "Automatic calculation based on income",
+      "incomeRD": "RD Income (DOP)",
+      "incomeExport": "Export Income (USD)",
+      "itbis": "ITBIS (18%)",
+      "itbisDesc": "Tax on Goods and Services",
+      "isr": "ISR (27%)",
+      "isrDesc": "Corporate Income Tax",
+      "assetTax": "Asset Tax",
+      "assetTaxDesc": "1% of net assets value",
+      "itbisWithheld": "Withheld ITBIS (IR-17)",
+      "itbisWithheldDesc": "Withholdings from informal providers",
+      "rst": "Simplified Regime (RST)",
+      "rstDesc": "Single payment based on purchases or income",
+      "exportNoteTitle": "Note on Exported Services",
+      "exportNoteDesc": "According to the Dominican Tax Code, income received in USD for services rendered abroad (such as SaaS) is exempt from ITBIS. It must be reported in the 607 form as 'Export Income'.",
+      "due": "Due",
+      "regularized": "RNC / Regularized",
+      "informal": "Informal / Simplified"
+    }
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "viewAll": "View all",
+    "showMore": "Show more",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "from": "from",
+    "to": "to",
+    "at": "at",
+    "by": "by",
+    "with": "with",
+    "days": "days",
+    "hours": "hours",
+    "minutes": "minutes",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "success": "Success",
+    "error": "An error occurred",
+    "saveSuccess": "Changes saved successfully",
+    "saveError": "Error saving changes"
+  },
+  "settings": {
+    "title": "Settings",
+    "save": "Save changes",
+    "tabs": {
+      "users": "Users",
+      "personal": "My Profile",
+      "tenant": "Company",
+      "audit": "Traceability",
+      "subscription": "Subscription"
+    },
+    "users": {
+      "title": "User Management",
+      "active": "Active Users",
+      "inactive": "Inactive",
+      "available": "Available",
+      "limit": "Plan limit",
+      "newUser": "New User",
+      "search": "Search by name, email...",
+      "department": "Department",
+      "role": "Role",
+      "status": "Status",
+      "lastLogin": "Last login",
+      "never": "Never",
+      "actions": {
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "edit": "Edit"
+      },
+      "form": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address",
+        "phone": "Phone",
+        "team": "Team",
+        "selectTeam": "Select team",
+        "department": "Department"
+      }
+    },
+    "personal": {
+      "title": "Personal Profile",
+      "subtitle": "Manage your info and security",
+      "security": "Account Security",
+      "securityDesc": "Protect access to your ANTU CRM account",
+      "preferences": "Preferences",
+      "preferencesDesc": "Configure your user experience",
+      "changePassword": "Change password",
+      "mfa": "Two-Factor Authentication (MFA)",
+      "mfaDesc": "Add an extra layer of security to your account.",
+      "language": "Interface language",
+      "currency": "System currency",
+      "timezone": "Timezone",
+      "dateFormat": "Date format",
+      "timeFormat": "Time format",
+      "preview": "Preview",
+      "financialInfo": "Financial information",
+      "readOnly": "Read-only",
+      "systemCurrency": "System currency",
+      "notifications": {
+        "title": "Notifications",
+        "email": "Email",
+        "dailySummary": "Daily activities summary",
+        "opportunityAlerts": "Critical opportunity alerts",
+        "supportNote": "Configured by ANTU CRM during company creation. For changes contact"
+      }
+    },
+    "tenant": {
+      "title": "Company Settings",
+      "identity": "Company Identity",
+      "location": "Location & Contact",
+      "branding": "Branding & Appearance",
+      "companyName": "Company Name",
+      "industry": "Industry / Sector",
+      "taxId": "Tax ID / RNC",
+      "website": "Website",
+      "email": "Corporate Email",
+      "phone": "Main Phone",
+      "address": "Physical Address"
+    }
+  }
+}

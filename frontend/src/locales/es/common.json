@@ -1,0 +1,512 @@
+{
+  "app": {
+    "name": "ANTU CRM",
+    "tagline": "Gestión de Relaciones con Clientes",
+    "copyright": "© 2024 {{company}}. Todos los derechos reservados."
+  },
+  "navigation": {
+    "main": "Principal",
+    "admin": "Administración",
+    "dashboard": "Dashboard",
+    "clients": "Clientes",
+    "contacts": "Contactos",
+    "companies": "Empresas",
+    "opportunities": "Oportunidades",
+    "generalQuotes": "Cotización Gral",
+    "quotes": "Cotizaciones",
+    "quotesMFP": "Cotización MFP",
+    "inventory": "Inventario",
+    "activities": "Actividades",
+    "tasks": "Tareas",
+    "billing": "Facturación",
+    "cxc": "Cuentas por Cobrar",
+    "marketing": "Marketing",
+    "reports": "Reportes",
+    "vendedores": "Dashboard Vendedores",
+    "salesPerformance": "Ventas y Desempeño",
+    "clientsContacts": "Clientes y Contactos",
+    "finance": "Finanzas",
+    "operations": "Operaciones",
+    "performance": "Mi Desempeño",
+    "settings": "Configuración",
+    "users": "Usuarios",
+    "saasMetrics": "Métricas SaaS",
+    "platformSettings": "Configuración Plataforma",
+    "superAdmin": "Super Admin",
+    "backToCrm": "Ir al CRM",
+    "obligations": "Obligaciones Fiscales"
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de vuelta",
+      "subtitle": "Ingresa tus credenciales para acceder al CRM",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "rememberMe": "Recordarme",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "superAdmin": "Acceso Super Admin",
+      "demoCredentials": "Credenciales de demo",
+      "errors": {
+        "invalidCredentials": "Credenciales incorrectas. Por favor intenta de nuevo.",
+        "emailRequired": "El correo electrónico es requerido",
+        "passwordRequired": "La contraseña es requerida"
+      }
+    },
+    "logout": "Cerrar sesión",
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Administrador",
+      "manager": "Gerente",
+      "user": "Vendedor"
+    }
+  },
+  "dashboard": {
+    "greeting": "¡Hola, {{name}}! 👋",
+    "subtitle": "Aquí está el resumen de tu día",
+    "sales": {
+      "title": "Dashboard de Ventas",
+      "subtitle": "Análisis de pipeline y métricas de rendimiento",
+      "kpis": {
+        "pipeline": "Pipeline Total",
+        "pipelineSub": "Valor acumulado en todas las etapas",
+        "target": "Cierre Mes vs Cuota",
+        "conversion": "Tasa de Conversión",
+        "avgDeal": "Promedio por Deal",
+        "vsLastMonth": "vs mes anterior",
+        "ppVsLastMonth": "pp vs mes anterior"
+      },
+      "sections": {
+        "target": "Cierre Mes vs Cuota",
+        "nextMonth": "Pipeline Mes Próximo vs Cuota",
+        "nextMonthSub": "Basado en oportunidades proyectadas para próximo mes",
+        "funnel": "Embudo de Ventas",
+        "funnelSub": "Pipeline por etapa con tasas de conversión",
+        "aiInsights": "Insights de IA",
+        "aiInsightsSub": "Basado en tu pipeline actual",
+        "stages": "Oportunidades por Etapa",
+        "performance": "Top Vendedores",
+        "performanceSub": "Este mes"
+      }
+    },
+    "kpis": {
+      "contacts": "Contactos",
+      "opportunities": "Oportunidades",
+      "sales": "Ventas",
+      "pendingTasks": "Tareas Pendientes"
+    },
+    "healthStatus": {
+      "healthy": "Todo en orden",
+      "warning": "Atención requerida",
+      "critical": "Acción urgente",
+      "completed": "{{count}} tareas completadas",
+      "overdue": "{{count}} tarea(s) vencida(s)"
+    },
+    "sections": {
+      "myTasks": "Mis Tareas",
+      "recentActivity": "Actividad Reciente",
+      "salesPipeline": "Pipeline de Ventas"
+    }
+  },
+  "contacts": {
+    "title": "Contactos",
+    "subtitle": "Gestiona tu base de datos de clientes y prospectos",
+    "stats": {
+      "total": "Total",
+      "active": "Activos",
+      "prospects": "Prospectos",
+      "inactive": "Inactivos"
+    },
+    "fields": {
+      "name": "Nombre",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "company": "Empresa",
+      "position": "Cargo",
+      "location": "Ubicación",
+      "status": "Estado",
+      "score": "Score"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "prospect": "Prospecto"
+    },
+    "actions": {
+      "new": "Nuevo contacto",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "view": "Ver detalle"
+    }
+  },
+  "opportunities": {
+    "title": "Oportunidades",
+    "subtitle": "Pipeline de ventas y seguimiento de deals",
+    "stats": {
+      "totalPipeline": "Total Pipeline",
+      "weightedValue": "Valor Ponderado",
+      "count": "Oportunidades",
+      "won": "Ganado"
+    },
+    "stages": {
+      "new": "Nuevo Lead",
+      "contacted": "Contactado",
+      "proposal": "Propuesta",
+      "negotiation": "Negociación",
+      "closedWon": "Ganado",
+      "closedLost": "Perdido"
+    },
+    "fields": {
+      "name": "Nombre",
+      "company": "Empresa",
+      "value": "Valor",
+      "probability": "Probabilidad",
+      "expectedClose": "Cierre Esperado",
+      "assignedTo": "Asignado a",
+      "aiScore": "AI Score"
+    },
+    "actions": {
+      "new": "Nueva oportunidad",
+      "move": "Mover",
+      "win": "Marcar ganada",
+      "lose": "Marcar perdida"
+    }
+  },
+  "tasks": {
+    "title": "Tareas",
+    "subtitle": "Gestiona tus actividades y seguimientos",
+    "tabs": {
+      "all": "Todas",
+      "pending": "Pendientes",
+      "inProgress": "En progreso",
+      "overdue": "Vencidas",
+      "completed": "Completadas"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "inProgress": "En progreso",
+      "completed": "Completada",
+      "overdue": "Vencida"
+    },
+    "fields": {
+      "title": "Título",
+      "description": "Descripción",
+      "dueDate": "Fecha de vencimiento",
+      "priority": "Prioridad",
+      "assignedTo": "Asignado a"
+    },
+    "actions": {
+      "new": "Nueva tarea",
+      "complete": "Completar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "empty": {
+      "title": "No hay tareas",
+      "description": "Crea tu primera tarea para comenzar"
+    }
+  },
+  "saas": {
+    "metrics": {
+      "title": "Métricas SaaS",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "churn": "Churn Rate",
+      "ltv": "LTV",
+      "cac": "CAC",
+      "nrr": "NRR",
+      "payback": "Payback Period",
+      "magicNumber": "Magic Number"
+    },
+    "pricing": {
+      "title": "Planes y Precios",
+      "starter": {
+        "name": "Starter",
+        "price": "$29",
+        "period": "/usuario/mes",
+        "description": "Perfecto para equipos pequeños",
+        "features": [
+          "Hasta 5 usuarios",
+          "Pipeline básico",
+          "1,000 contactos",
+          "Soporte por email",
+          "5GB almacenamiento"
+        ]
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$79",
+        "period": "/usuario/mes",
+        "description": "Para equipos en crecimiento",
+        "features": [
+          "Usuarios ilimitados",
+          "Múltiples pipelines",
+          "50,000 contactos",
+          "Soporte prioritario",
+          "100GB almacenamiento",
+          "Automatizaciones",
+          "Reportes avanzados"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "",
+        "description": "Para grandes organizaciones",
+        "features": [
+          "Todo lo de Professional",
+          "SSO/SAML",
+          "API dedicada",
+          "CSM dedicado",
+          "SLA 99.99%",
+          "On-premise option",
+          "Contratos personalizados"
+        ]
+      }
+    },
+    "billing": {
+      "title": "Facturación",
+      "invoices": "Facturas",
+      "paymentMethods": "Métodos de pago",
+      "subscription": "Suscripción",
+      "usage": "Uso",
+      "upgrade": "Mejorar plan",
+      "downgrade": "Reducir plan"
+    }
+  },
+  "superAdmin": {
+    "title": "Super Admin",
+    "subtitle": "Gestión de tenants y configuración global",
+    "tabs": {
+      "branding": "Marca",
+      "login": "Login",
+      "modules": "Módulos",
+      "limits": "Límites"
+    },
+    "tenants": {
+      "title": "Tenants",
+      "count": "{{count}} empresas registradas",
+      "new": "Nuevo Tenant",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "createModal": {
+        "title": "Nueva Empresa (Tenant)",
+        "description": "Configura el perfil completo de la nueva empresa en el ecosistema Antü.",
+        "identityAccess": "Identidad y Acceso",
+        "nameLabel": "Nombre de la Empresa *",
+        "namePlaceholder": "Ej. Mi Empresa Internacional",
+        "subdomainLabel": "Subdominio de acceso *",
+        "subdomainPlaceholder": "miempresa",
+        "businessIdLabel": "ID Empresarial (TAX ID / RNC)",
+        "businessIdPlaceholder": "Ej. 1-01-00000-0",
+        "currencyLabel": "Moneda de Facturación *",
+        "currencyDOP": "DOP - Peso Dominicano",
+        "currencyUSD": "USD - Dólar (Internacional)",
+        "locationWeb": "Ubicación y Web",
+        "websiteLabel": "Sitio Web",
+        "websitePlaceholder": "https://www.miempresa.com",
+        "addressLabel": "Dirección Principal",
+        "addressPlaceholder": "Calle, Ciudad, País",
+        "primaryContact": "Contacto Principal",
+        "fullNameLabel": "Nombre Completo",
+        "fullNamePlaceholder": "Persona a cargo",
+        "emailLabel": "Correo Electrónico",
+        "emailPlaceholder": "contacto@empresa.com",
+        "corpPhoneLabel": "Teléfono Corporativo",
+        "phonePlaceholder": "+1 (000) 000-0000",
+        "collectionsContact": "Contacto Cobros",
+        "collectionsNameLabel": "Nombre Encargado Cobros",
+        "collectionsNamePlaceholder": "Nombre del responsable",
+        "collectionsEmailLabel": "Correo de Cobros",
+        "collectionsEmailPlaceholder": "cxc@empresa.com",
+        "collectionsPhoneLabel": "Teléfono Cobros",
+        "extLabel": "Ext.",
+        "extPlaceholder": "Ej. 101",
+        "discard": "Descartar",
+        "confirmCreate": "Confirmar y Crear Empresa"
+      },
+      "createUserModal": {
+        "title": "Crear Usuario Administrativo",
+        "description": "Registra el administrador para {{tenantName}}. Podrá gestionar su propio equipo.",
+        "firstNameLabel": "Nombre",
+        "firstNamePlaceholder": "Ej. Juan",
+        "lastNameLabel": "Apellido",
+        "lastNamePlaceholder": "Ej. Pérez",
+        "emailLabel": "Correo Electrónico",
+        "emailPlaceholder": "admin@empresa.com",
+        "roleLabel": "Rol del Sistema",
+        "roleValue": "ADMINISTRADOR DE TENANT",
+        "roleDescription": "Privilegios totales sobre este tenant",
+        "cancel": "Cancelar",
+        "createAccess": "Crear Acceso Administrativo"
+      }
+    },
+    "branding": {
+      "preview": "Preview",
+      "colors": {
+        "primary": "Color Primario",
+        "secondary": "Color Secundario",
+        "accent": "Color de Énfasis"
+      },
+      "loginBackground": "Fondo del Login",
+      "backgroundTypes": {
+        "gradient": "Gradiente",
+        "solid": "Sólido",
+        "image": "Imagen"
+      }
+    },
+    "obligations": {
+      "title": "Obligaciones Fiscales",
+      "subtitle": "Cálculo automático de obligaciones basado en ingresos",
+      "incomeRD": "Ingresos RD (DOP)",
+      "incomeExport": "Ingresos Exportación (USD)",
+      "itbis": "ITBIS (18%)",
+      "itbisDesc": "Impuesto sobre Transferencia de Bienes y Servicios",
+      "isr": "ISR (27%)",
+      "isrDesc": "Impuesto sobre la Renta Corporativa",
+      "assetTax": "Impuesto Activos",
+      "assetTaxDesc": "1% del valor de los activos netos",
+      "itbisWithheld": "ITBIS Retenido (IR-17)",
+      "itbisWithheldDesc": "Retenciones a proveedores informales",
+      "rst": "RST Persona Física",
+      "rstDesc": "Pago único basado en compras o ingresos",
+      "exportNoteTitle": "Nota sobre Exportación de Servicios",
+      "exportNoteDesc": "Según el Código Tributario Dominicano, los ingresos recibidos en dólares por servicios prestados a empresas en el extranjero (como el acceso al SaaS) están exentos de ITBIS. Se deben reportar en el formato 607 como 'Ingresos por Exportación'.",
+      "due": "Vence",
+      "regularized": "RNC / Regularizado",
+      "informal": "Informal / Simplificado"
+    }
+  },
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "create": "Crear",
+    "view": "Ver",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "loading": "Cargando...",
+    "viewAll": "Ver todas",
+    "showMore": "Ver más",
+    "apply": "Aplicar",
+    "reset": "Restaurar"
+  },
+  "common": {
+    "yes": "Sí",
+    "no": "No",
+    "or": "o",
+    "and": "y",
+    "from": "de",
+    "to": "a",
+    "at": "en",
+    "by": "por",
+    "with": "con",
+    "days": "días",
+    "hours": "horas",
+    "minutes": "minutos",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "tomorrow": "Mañana",
+    "thisWeek": "Esta semana",
+    "thisMonth": "Este mes",
+    "thisYear": "Este año",
+    "success": "Operación exitosa",
+    "error": "Ha ocurrido un error",
+    "saveSuccess": "Cambios guardados correctamente",
+    "saveError": "Error al guardar los cambios"
+  },
+  "settings": {
+    "title": "Configuración",
+    "save": "Guardar cambios",
+    "tabs": {
+      "users": "Usuarios",
+      "personal": "Mi Perfil",
+      "tenant": "Empresa",
+      "audit": "Trazabilidad",
+      "subscription": "Suscripción"
+    },
+    "users": {
+      "title": "Gestión de Usuarios",
+      "active": "Usuarios Activos",
+      "inactive": "Inactivos",
+      "available": "Disponibles",
+      "limit": "Límite del plan",
+      "newUser": "Nuevo Usuario",
+      "search": "Buscar por nombre, email...",
+      "department": "Departamento",
+      "role": "Rol",
+      "status": "Estado",
+      "lastLogin": "Último acceso",
+      "never": "Nunca",
+      "actions": {
+        "activate": "Activar",
+        "deactivate": "Desactivar",
+        "delete": "Eliminar",
+        "edit": "Editar"
+      },
+      "form": {
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "team": "Equipo",
+        "selectTeam": "Seleccionar equipo",
+        "department": "Departamento"
+      }
+    },
+    "personal": {
+      "title": "Perfil Personal",
+      "subtitle": "Gestiona tu información y seguridad",
+      "security": "Seguridad de la cuenta",
+      "securityDesc": "Protege el acceso a tu cuenta de ANTU CRM",
+      "preferences": "Preferencias",
+      "preferencesDesc": "Configura tu experiencia de usuario",
+      "changePassword": "Cambiar contraseña",
+      "mfa": "Autenticación de dos factores (MFA)",
+      "mfaDesc": "Añade una capa extra de seguridad a tu cuenta.",
+      "language": "Idioma de la interfaz",
+      "currency": "Moneda del sistema",
+      "timezone": "Zona horaria",
+      "dateFormat": "Formato de fecha",
+      "timeFormat": "Formato de hora",
+      "preview": "Vista previa",
+      "financialInfo": "Información financiera",
+      "readOnly": "Solo lectura",
+      "systemCurrency": "Moneda del sistema",
+      "notifications": {
+        "title": "Notificaciones",
+        "email": "Email",
+        "dailySummary": "Resumen diario de actividades",
+        "opportunityAlerts": "Alertas de oportunidades críticas",
+        "supportNote": "Configurado por ANTU CRM al crear la empresa. Para cambios contactar a"
+      }
+    },
+    "tenant": {
+      "title": "Configuración de Empresa",
+      "identity": "Identidad de la Empresa",
+      "location": "Ubicación y Contacto",
+      "branding": "Marca y Apariencia",
+      "companyName": "Nombre de la Empresa",
+      "industry": "Sector / Industria",
+      "taxId": "RNC / Tax ID",
+      "website": "Sitio Web",
+      "email": "Email Corporativo",
+      "phone": "Teléfono Principal",
+      "address": "Dirección Física"
+    }
+  }
+}

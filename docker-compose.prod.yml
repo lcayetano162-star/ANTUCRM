@@ -1,0 +1,144 @@
+version: '3.8'
+
+# ============================================
+# ANTU CRM - Production Docker Compose
+# Para deployment en DigitalOcean Droplet
+# ============================================
+
+services:
+  # ============================================
+  # NestJS API Application
+  # ============================================
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      target: production
+    container_name: antu-api
+    restart: unless-stopped
+    
+    # Variables de entorno desde archivo .env
+    env_file:
+      - .env
+    
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      # Database URL debe venir del .env
+      # DATABASE_URL=${DATABASE_URL}
+    
+    ports:
+      - "3001:3001"
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    networks:
+      - antu-network
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Frontend (React SPA served by Nginx)
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${API_URL}
+    container_name: antu-frontend
+    restart: unless-stopped
+    
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    volumes:
+      # Nginx configuration
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # SSL certificates (opcional, para HTTPS)
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    
+    depends_on:
+      - api
+    
+    networks:
+      - antu-network
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Redis (Cache y Rate Limiting)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: antu-redis
+    restart: unless-stopped
+    
+    volumes:
+      - redis_data:/data
+    
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+    networks:
+      - antu-network
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Nginx Reverse Proxy (Opcional - si frontend no sirve API)
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: antu-nginx
+    restart: unless-stopped
+    
+    ports:
+      - "8080:80"  # Puerto alternativo si es necesario
+    
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    
+    depends_on:
+      - api
+    
+    networks:
+      - antu-network
+    
+    profiles:
+      - alternative  # Solo se inicia con: docker compose --profile alternative up
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  antu-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

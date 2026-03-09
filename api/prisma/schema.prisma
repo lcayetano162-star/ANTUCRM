@@ -1,0 +1,1374 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// ============================================
+// MODELOS DE TENANT Y AUTENTICACIÓN
+// ============================================
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  isActive  Boolean  @default(true)
+  settings  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users              User[]
+  contacts           Contact[]
+  companies          Company[]
+  opportunities      Opportunity[]
+  activities         Activity[]
+  tasks              Task[]
+  products           Product[]
+  auditLogs          AuditLog[]
+  contactTags        ContactTag[]
+  notes              Note[]
+  productCategories  ProductCategory[]
+  productBatches     ProductBatch[]
+  inventoryMovements InventoryMovement[]
+  warehouseMaps      WarehouseMap[]
+  inventoryAIConfigs InventoryAIConfig[]
+  demandForecasts    DemandForecast[]
+  inventoryAlerts    InventoryAlert[]
+  subscription       Subscription?
+  quotas             Quota[]
+  activityGoals      ActivityGoal[]
+  managerKPIs        ManagerKPI[]
+  quotes             Quote[]
+  mpsQuotes          MpsQuote[]
+  invoices           Invoice[]
+  serviceTickets     ServiceTicket[]
+  serviceWorkOrders  ServiceWorkOrder[]
+  campaigns          Campaign[]
+  emailMessages      EmailMessage[]
+  govOpportunities   GovOpportunity[]
+  interactions       Interaction[]
+  whatsappMessages   WhatsAppMessage[]
+  whatsappTemplates  WhatsAppTemplate[]
+
+  @@map("tenants")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  avatar       String?
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenantId     String
+  tenant       Tenant  @relation(fields: [tenantId], references: [id])
+  roleId       String?
+  role         Role?   @relation(fields: [roleId], references: [id])
+  managerId    String?
+  manager      User?   @relation("UserManager", fields: [managerId], references: [id])
+  subordinates User[]  @relation("UserManager")
+
+  assignedContacts      Contact[]
+  assignedOpportunities Opportunity[]
+  activities            Activity[]
+  tasks                 Task[]
+  auditLogs             AuditLog[]
+  notes                 Note[]
+  quotas                Quota[]
+  activityGoals         ActivityGoal[]
+  managerKPIs           ManagerKPI[]
+  quotesCreated         Quote[]
+  mpsQuotesCreated      MpsQuote[]
+  mpsQuotesApproved     MpsQuote[]    @relation("MpsApprovedBy")
+  invoicesCreated       Invoice[]
+  assignedTickets       ServiceTicket[]
+  ticketsCreated        ServiceTicket[] @relation("TicketCreatedBy")
+  workOrders            ServiceWorkOrder[]
+  campaignsCreated      Campaign[]
+  emailsSent            EmailMessage[] @relation("EmailSentBy")
+  interactions          Interaction[]  @relation("InteractionUser")
+
+  tokenVersion        Int       @default(0)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  mfaEnabled          Boolean   @default(false)
+  mfaSecret           String?
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ============================================
+// MODELOS DE CONTACTOS Y EMPRESAS
+// ============================================
+
+model Contact {
+  id            String        @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String?
+  phone         String?
+  hasWhatsApp   Boolean       @default(false)
+  jobTitle      String?
+  isMainContact Boolean       @default(false)
+  status        ContactStatus @default(PROSPECT)
+  score         Int?          @default(0)
+  avatar        String?
+  deletedAt     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  companyId    String?
+  company      Company? @relation(fields: [companyId], references: [id])
+  assignedToId String?
+  assignedTo   User?    @relation(fields: [assignedToId], references: [id])
+
+  tags          ContactTag[]
+  activities    Activity[]
+  opportunities Opportunity[]
+  notes         Note[]
+  tasks         Task[]
+  quotes        Quote[]
+  mpsQuotes     MpsQuote[]
+  invoices      Invoice[]
+  serviceTickets ServiceTicket[]
+  campaignRecipients CampaignRecipient[]
+  emailMessages      EmailMessage[]
+  interactions       Interaction[]     @relation("InteractionContact")
+  whatsappMessages   WhatsAppMessage[] @relation("WhatsAppContact")
+
+  @@map("contacts")
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  industry    String?
+  website     String?
+  email       String?
+  phone       String?
+  address     String?
+  city        String?
+  country     String?
+  taxId       String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  contacts Contact[]
+
+  @@map("companies")
+}
+
+model ContactTag {
+  id        String   @id @default(uuid())
+  name      String
+  color     String   @default("#3B82F6")
+  createdAt DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  contacts Contact[]
+
+  @@unique([tenantId, name])
+  @@map("contact_tags")
+}
+
+enum ContactStatus {
+  ACTIVE
+  INACTIVE
+  PROSPECT
+  CUSTOMER
+  CHURNED
+}
+
+// ============================================
+// MODELOS DE OPORTUNIDADES Y ACTIVIDADES
+// ============================================
+
+model Opportunity {
+  id                String            @id @default(uuid())
+  name              String
+  description       String?
+  stage             OpportunityStage  @default(LEAD)
+  status            OpportunityStatus @default(OPEN)
+  value             Float?
+  probability       Int?              @default(0)
+  expectedCloseDate DateTime?
+  actualCloseDate   DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenantId     String
+  tenant       Tenant  @relation(fields: [tenantId], references: [id])
+  contactId    String
+  contact      Contact @relation(fields: [contactId], references: [id])
+  assignedToId String?
+  assignedTo   User?   @relation(fields: [assignedToId], references: [id])
+
+  activities    Activity[]
+  quotes        Quote[]
+  mpsQuotes     MpsQuote[]
+  govOpportunity GovOpportunity?
+  interactions  Interaction[]
+
+  @@map("opportunities")
+}
+
+enum OpportunityStage {
+  LEAD
+  QUALIFICATION
+  PROPOSAL
+  NEGOTIATION
+  CLOSED
+}
+
+enum OpportunityStatus {
+  OPEN
+  WON
+  LOST
+  CLOSED
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  type        ActivityType
+  description String
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+
+  tenantId      String
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
+  contactId     String?
+  contact       Contact?     @relation(fields: [contactId], references: [id])
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  createdById   String
+  createdBy     User         @relation(fields: [createdById], references: [id])
+
+  @@map("activities")
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+  TASK
+  WHATSAPP
+  SYSTEM
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(PENDING)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  contactId    String?
+  contact      Contact? @relation(fields: [contactId], references: [id])
+  assignedToId String
+  assignedTo   User     @relation(fields: [assignedToId], references: [id])
+
+  @@map("tasks")
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenantId    String
+  tenant      Tenant  @relation(fields: [tenantId], references: [id])
+  contactId   String
+  contact     Contact @relation(fields: [contactId], references: [id])
+  createdById String
+  createdBy   User    @relation(fields: [createdById], references: [id])
+
+  @@map("notes")
+}
+
+// ============================================
+// MODELOS DE INVENTARIO
+// ============================================
+
+model Product {
+  id            String   @id @default(uuid())
+  sku           String
+  name          String
+  description   String?
+  stockQuantity Int      @default(0)
+  minStock      Int      @default(0)
+  maxStock      Int?
+  unitCost      Float?
+  unitPrice     Float?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenantId   String
+  tenant     Tenant           @relation(fields: [tenantId], references: [id])
+  categoryId String?
+  category   ProductCategory? @relation(fields: [categoryId], references: [id])
+
+  batches      ProductBatch[]
+  movements    InventoryMovement[]
+  quoteItems   QuoteItem[]
+  invoiceItems InvoiceItem[]
+  woParts      ServiceWoPart[]
+
+  @@unique([tenantId, sku])
+  @@map("products")
+}
+
+model ProductCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  products Product[]
+
+  @@unique([tenantId, name])
+  @@map("product_categories")
+}
+
+model ProductBatch {
+  id          String      @id @default(uuid())
+  batchNumber String
+  quantity    Int
+  expiryDate  DateTime?
+  status      BatchStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("product_batches")
+}
+
+enum BatchStatus {
+  ACTIVE
+  EXPIRED
+  DEPLETED
+}
+
+model InventoryMovement {
+  id        String       @id @default(uuid())
+  type      MovementType
+  quantity  Int
+  reason    String?
+  reference String?
+  createdAt DateTime     @default(now())
+
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("inventory_movements")
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  TRANSFER
+}
+
+model WarehouseMap {
+  id        String   @id @default(uuid())
+  zone      String
+  shelf     String
+  section   String?
+  capacity  Int?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("warehouse_maps")
+}
+
+// ============================================
+// MODELOS DE AUDITORÍA
+// ============================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+// ============================================
+// MODELOS DE CONFIGURACIÓN DE IA
+// ============================================
+
+model InventoryAIConfig {
+  id         String    @id @default(uuid())
+  configType String
+  settings   Json
+  isActive   Boolean   @default(true)
+  lastRunAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("inventory_ai_configs")
+}
+
+model DemandForecast {
+  id              String   @id @default(uuid())
+  productId       String
+  forecastDate    DateTime
+  predictedDemand Int
+  confidence      Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("demand_forecasts")
+}
+
+model InventoryAlert {
+  id          String        @id @default(uuid())
+  type        AlertType
+  severity    AlertSeverity @default(MEDIUM)
+  title       String
+  description String
+  status      AlertStatus   @default(ACTIVE)
+  resolvedAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  productId String?
+
+  @@map("inventory_alerts")
+}
+
+enum AlertType {
+  LOW_STOCK
+  EXPIRY
+  OVERSTOCK
+  ANOMALY
+  RECOMMENDATION
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+model AIProviderConfig {
+  id       String  @id @default(uuid())
+  apiKey   String?
+  isActive Boolean @default(true)
+}
+
+model PromptTemplate {
+  id String @id @default(uuid())
+}
+
+model AIUsageLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  createdAt DateTime @default(now())
+}
+
+model Plan {
+  id            String         @id @default(uuid())
+  code          String         @unique
+  priceMonthly  Float          @default(0.0)
+  priceYearly   Float          @default(0.0)
+  maxUsers      Int            @default(5)
+  maxAdmins     Int            @default(1)
+  maxStorage    Int            @default(10)
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id              String   @id @default(uuid())
+  tenantId        String   @unique
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  planId          String
+  plan            Plan     @relation(fields: [planId], references: [id])
+  status          String
+  billingCycle    String
+  externalId      String?
+  paymentMethod   String?
+  nextPaymentDate DateTime
+  lastPaymentDate DateTime
+
+  paymentLogs PaymentLog[]
+}
+
+model PaymentLog {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  tenantId       String
+  amount         Float
+  currency       String
+  status         String
+  gateway        String
+  gatewayRef     String?
+  paidAt         DateTime
+  metadata       Json?
+}
+
+model GlobalBillingConfig {
+  id String @id @default(uuid())
+}
+
+// ============================================
+// CPQ — COTIZACIONES Y MPS
+// ============================================
+
+model Quote {
+  id          String      @id @default(uuid())
+  number      String
+  title       String
+  status      QuoteStatus @default(DRAFT)
+  validUntil  DateTime?
+  subtotal    Float       @default(0)
+  discount    Float       @default(0)
+  tax         Float       @default(0)
+  total       Float       @default(0)
+  notes       String?
+  terms       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  tenantId      String
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  contactId     String
+  contact       Contact      @relation(fields: [contactId], references: [id])
+  createdById   String
+  createdBy     User         @relation(fields: [createdById], references: [id])
+
+  items QuoteItem[]
+
+  @@unique([tenantId, number])
+  @@map("quotes")
+}
+
+model QuoteItem {
+  id          String  @id @default(uuid())
+  description String
+  quantity    Float   @default(1)
+  unitPrice   Float
+  discount    Float   @default(0)
+  subtotal    Float
+  sortOrder   Int     @default(0)
+
+  quoteId   String
+  quote     Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  @@map("quote_items")
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+// MPS — Managed Print Services
+model MpsQuote {
+  id               String        @id @default(uuid())
+  number           String
+  status           MpsStatus     @default(DRAFT)
+  // Equipos
+  equipmentModel   String?
+  monthlyVolumeBW  Int           @default(0)
+  monthlyVolumeColor Int         @default(0)
+  // Financiero PMT
+  equipmentCost    Float         @default(0)
+  interestRate     Float         @default(0)
+  termMonths       Int           @default(36)
+  monthlyPayment   Float         @default(0)
+  // Costos por página
+  costPerPageBW    Float         @default(0)
+  costPerPageColor Float         @default(0)
+  monthlyClickBW   Float         @default(0)
+  monthlyClickColor Float        @default(0)
+  // Servicios
+  includesService  Boolean       @default(true)
+  includesSupplies Boolean       @default(true)
+  serviceMonthly   Float         @default(0)
+  totalMonthly     Float         @default(0)
+  // Aprobación
+  approvalNotes    String?
+  approvedAt       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  tenantId      String
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  contactId     String
+  contact       Contact      @relation(fields: [contactId], references: [id])
+  createdById   String
+  createdBy     User         @relation(fields: [createdById], references: [id])
+  approvedById  String?
+  approvedBy    User?        @relation("MpsApprovedBy", fields: [approvedById], references: [id])
+
+  @@unique([tenantId, number])
+  @@map("mps_quotes")
+}
+
+enum MpsStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  ACTIVE
+  CANCELLED
+}
+
+// ============================================
+// INVOICING — FACTURAS NCF (República Dominicana)
+// ============================================
+
+model Invoice {
+  id          String        @id @default(uuid())
+  number      String
+  ncfType     NcfType
+  ncfSequence String?
+  status      InvoiceStatus @default(DRAFT)
+  issueDate   DateTime      @default(now())
+  dueDate     DateTime?
+  paidAt      DateTime?
+  subtotal    Float         @default(0)
+  taxAmount   Float         @default(0)
+  total       Float         @default(0)
+  paidAmount  Float         @default(0)
+  balance     Float         @default(0)
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id])
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  items    InvoiceItem[]
+  payments InvoicePayment[]
+
+  @@unique([tenantId, number])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  description String
+  quantity    Float   @default(1)
+  unitPrice   Float
+  discount    Float   @default(0)
+  taxRate     Float   @default(0.18)
+  subtotal    Float
+  sortOrder   Int     @default(0)
+
+  invoiceId String
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  @@map("invoice_items")
+}
+
+model InvoicePayment {
+  id        String   @id @default(uuid())
+  amount    Float
+  method    String
+  reference String?
+  paidAt    DateTime @default(now())
+  notes     String?
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+
+  @@map("invoice_payments")
+}
+
+enum NcfType {
+  B01  // Crédito Fiscal
+  B02  // Consumidor Final
+  B14  // Gubernamental
+  B15  // Regímenes Especiales
+  B16  // Exportaciones
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIAL
+  PAID
+  OVERDUE
+  VOID
+  CANCELLED
+}
+
+// ============================================
+// SERVICE DESK — TICKETS Y ÓRDENES DE TRABAJO
+// ============================================
+
+model ServiceTicket {
+  id           String         @id @default(uuid())
+  ticketNumber String
+  title        String
+  description  String
+  status       TicketStatus   @default(OPEN)
+  priority     TicketPriority @default(MEDIUM)
+  category     String?
+  slaDeadline  DateTime?
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  contactId    String
+  contact      Contact  @relation(fields: [contactId], references: [id])
+  assignedToId String?
+  assignedTo   User?    @relation(fields: [assignedToId], references: [id])
+  createdById  String
+  createdBy    User     @relation("TicketCreatedBy", fields: [createdById], references: [id])
+
+  workOrders ServiceWorkOrder[]
+
+  @@unique([tenantId, ticketNumber])
+  @@map("service_tickets")
+}
+
+model ServiceWorkOrder {
+  id          String          @id @default(uuid())
+  woNumber    String
+  status      WorkOrderStatus @default(PENDING)
+  description String?
+  techNotes   String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  signatureData String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  tenantId   String
+  tenant     Tenant         @relation(fields: [tenantId], references: [id])
+  ticketId   String
+  ticket     ServiceTicket  @relation(fields: [ticketId], references: [id])
+  techId     String?
+  tech       User?          @relation(fields: [techId], references: [id])
+
+  parts ServiceWoPart[]
+
+  @@unique([tenantId, woNumber])
+  @@map("service_work_orders")
+}
+
+model ServiceWoPart {
+  id        String   @id @default(uuid())
+  quantity  Int      @default(1)
+  unitCost  Float    @default(0)
+  createdAt DateTime @default(now())
+
+  workOrderId String
+  workOrder   ServiceWorkOrder @relation(fields: [workOrderId], references: [id])
+  productId   String
+  product     Product          @relation(fields: [productId], references: [id])
+
+  @@map("service_wo_parts")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_PARTS
+  WAITING_CLIENT
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum WorkOrderStatus {
+  PENDING
+  DISPATCHED
+  IN_TRANSIT
+  ON_SITE
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// MODELOS DE DESEMPEÑO Y CUOTAS
+// ============================================
+
+enum QuotaPeriod {
+  ANNUAL
+  Q1
+  Q2
+  Q3
+  Q4
+  JAN
+  FEB
+  MAR
+  APR
+  MAY
+  JUN
+  JUL
+  AUG
+  SEP
+  OCT
+  NOV
+  DEC
+}
+
+enum QuotaType {
+  COMPANY
+  USER
+}
+
+model Quota {
+  id       String      @id @default(uuid())
+  tenantId String
+  tenant   Tenant      @relation(fields: [tenantId], references: [id])
+  userId   String? // NULL si type == COMPANY
+  user     User?       @relation(fields: [userId], references: [id])
+  year     Int
+  period   QuotaPeriod
+  type     QuotaType
+  amount   Float       @default(0)
+  currency String      @default("USD")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, userId, year, period, type])
+  @@map("quotas")
+}
+
+// ============================================
+// PERFORMANCE SCORECARD & ACTIVITY GOALS
+// ============================================
+
+model ActivityGoal {
+  id       String      @id @default(uuid())
+  tenantId String
+  tenant   Tenant      @relation(fields: [tenantId], references: [id])
+  userId   String // Relación al vendedor o gerente
+  user     User        @relation(fields: [userId], references: [id])
+  year     Int
+  period   QuotaPeriod
+
+  // Leading Indicators para Vendedores
+  weeklyVisitsTarget  Int @default(0) // Meta de visitas presenciales
+  weeklyCallsTarget   Int @default(0) // Meta de llamadas semanales
+  newOppsTarget       Int @default(0) // Nuevas oportunidades/prospección
+  speedToLeadMinutes  Int @default(60) // SLA de respuesta en minutos
+  followUpRatePercent Int @default(100) // % mínimo de seguimiento
+
+  // Storage de resultados calculados del periodo (Snapshots)
+  actualVisits       Int @default(0)
+  actualCalls        Int @default(0)
+  actualNewOpps      Int @default(0)
+  avgSpeedToLead     Int @default(0) // Promedio real en mins
+  actualFollowUpRate Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, userId, year, period])
+  @@map("activity_goals")
+}
+
+model ManagerKPI {
+  id        String      @id @default(uuid())
+  tenantId  String
+  tenant    Tenant      @relation(fields: [tenantId], references: [id])
+  managerId String // Relación al gerente
+  manager   User        @relation(fields: [managerId], references: [id])
+  year      Int
+  period    QuotaPeriod
+
+  // Leading Indicators para Managers
+  pipelineHealthTarget Float @default(80) // Meta % de opps con next steps
+  coachingSessions     Int   @default(4) // Sesiones 1:1 requeridas
+  forecastAccuracyMax  Float @default(10) // % máximo de error permitido en forecast
+  teamQuotaAttainment  Float @default(100) // Meta de cumplimiento general del team
+
+  // Storage de resultados reales (Snapshot)
+  actualPipelineHealth Float @default(0)
+  actualCoachingDone   Int   @default(0)
+  actualForecastError  Float @default(0)
+  actualTeamAttainment Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, managerId, year, period])
+  @@map("manager_kpis")
+}
+
+// ============================================
+// MODELOS DE MARKETING
+// ============================================
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum CampaignChannel {
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
+model Campaign {
+  id          String          @id @default(uuid())
+  name        String
+  subject     String?
+  body        String
+  channel     CampaignChannel @default(EMAIL)
+  status      CampaignStatus  @default(DRAFT)
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  sentCount   Int             @default(0)
+  openCount   Int             @default(0)
+  clickCount  Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  recipients  CampaignRecipient[]
+
+  @@map("campaigns")
+}
+
+model CampaignRecipient {
+  id         String    @id @default(uuid())
+  campaignId String
+  campaign   Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contactId  String
+  contact    Contact   @relation(fields: [contactId], references: [id])
+  sentAt     DateTime?
+  openedAt   DateTime?
+  clickedAt  DateTime?
+  status     String    @default("PENDING")
+
+  @@unique([campaignId, contactId])
+  @@map("campaign_recipients")
+}
+
+// ============================================
+// MODELOS DE EMAIL
+// ============================================
+
+model EmailMessage {
+  id          String    @id @default(uuid())
+  subject     String
+  body        String
+  fromEmail   String
+  toEmail     String
+  status      String    @default("SENT")
+  openedAt    DateTime?
+  clickedAt   DateTime?
+  trackingId  String    @unique @default(uuid())
+  sentAt      DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  sentById  String
+  sentBy    User     @relation("EmailSentBy", fields: [sentById], references: [id])
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id])
+
+  @@index([tenantId, contactId])
+  @@index([trackingId])
+  @@map("email_messages")
+}
+
+model EmailConfig {
+  id            String   @id @default(uuid())
+  tenantId      String   @unique
+  smtpHost      String
+  smtpPort      Int
+  smtpSecure    Boolean  @default(true)
+  smtpUser      String
+  smtpPassword  String
+  fromEmail     String
+  fromName      String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("email_configs")
+}
+
+// ============================================
+// MODELOS DE GOV (LICITACIONES LEY 47-25)
+// ============================================
+
+enum GovType {
+  LICITACION_PUBLICA
+  LICITACION_RESTRINGIDA
+  SELECCION_ABREVIADA
+  COMPRA_MENOR
+  COMPARACION_PRECIOS
+  CONTRATACION_DIRECTA
+  SUBASTA_INVERSA
+}
+
+enum GovChecklistStatus {
+  PENDING
+  UPLOADED
+  VERIFIED
+  REJECTED
+}
+
+model GovOpportunity {
+  id                 String    @id @default(uuid())
+  opportunityId      String    @unique
+  opportunity        Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  govType            GovType
+  processId          String?
+  submissionDeadline DateTime?
+  estimatedBudget    Float?
+  institution        String?
+  portalUrl          String?
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  checklist GovChecklist[]
+
+  @@map("gov_opportunities")
+}
+
+model GovChecklist {
+  id               String             @id @default(uuid())
+  govOpportunityId String
+  govOpportunity   GovOpportunity     @relation(fields: [govOpportunityId], references: [id], onDelete: Cascade)
+  item             String
+  category         String
+  status           GovChecklistStatus @default(PENDING)
+  fileUrl          String?
+  notes            String?
+  isMandatory      Boolean            @default(true)
+  verifiedAt       DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@map("gov_checklist")
+}
+
+// ============================================
+// MODELOS DE INTERACTIONS (HISTORIAL UNIFICADO)
+// ============================================
+
+enum InteractionType {
+  CALL
+  EMAIL
+  MEETING
+  WHATSAPP
+  NOTE
+  TASK
+  QUOTE_SENT
+  INVOICE_SENT
+  TICKET_CREATED
+  OPPORTUNITY_MOVED
+}
+
+model Interaction {
+  id            String          @id @default(uuid())
+  type          InteractionType
+  subject       String?
+  body          String?
+  direction     String?
+  duration      Int?
+  outcome       String?
+  metadata      Json?
+  happenedAt    DateTime        @default(now())
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Campos adicionales para timeline unificado
+  clientId      String?
+  fromAddress   String?
+  toAddress     String?
+  ccAddresses   String[]
+  bccAddresses  String[]
+  provider      String          @default("system")
+  externalId    String?         @unique
+  threadId      String?
+  parentId      String?
+  threadDepth   Int             @default(0)
+  isPrivate     Boolean         @default(false)
+  status        String          @default("pending")
+  
+  // Campos de IA
+  aiInsight     Json?
+  aiStatus      String          @default("pending")
+  aiProcessedAt DateTime?
+  
+  // Timestamps de estado
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  readAt        DateTime?
+  repliedAt     DateTime?
+
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  userId        String?
+  user          User?       @relation("InteractionUser", fields: [userId], references: [id])
+  contactId     String?
+  contact       Contact?    @relation("InteractionContact", fields: [contactId], references: [id])
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+
+  @@index([tenantId, contactId])
+  @@index([tenantId, opportunityId])
+  @@index([tenantId, clientId, createdAt])
+  @@index([externalId])
+  @@index([threadId])
+  @@map("interactions")
+}
+
+model InteractionEvent {
+  id            String   @id @default(uuid())
+  interactionId String
+  tenantId      String
+  eventType     String
+  eventData     Json?
+  provider      String   @default("unknown")
+  createdAt     DateTime @default(now())
+
+  @@index([interactionId])
+  @@index([tenantId, createdAt])
+  @@map("interaction_events")
+}
+
+// ============================================
+// MODELOS DE WHATSAPP
+// ============================================
+
+enum WhatsAppMessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum WhatsAppStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model WhatsAppMessage {
+  id            String                   @id @default(uuid())
+  phone         String
+  body          String
+  direction     WhatsAppMessageDirection
+  status        WhatsAppStatus           @default(SENT)
+  mediaUrl      String?
+  messageId     String?
+  messageType   String                   @default("text")
+  senderName    String?
+  errorCode     String?
+  errorMessage  String?
+  deletedAt     DateTime?
+  sentAt        DateTime                 @default(now())
+  deliveredAt   DateTime?
+  readAt        DateTime?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  contactId String?
+  contact   Contact? @relation("WhatsAppContact", fields: [contactId], references: [id])
+
+  @@index([tenantId, phone])
+  @@index([tenantId, contactId])
+  @@index([messageId])
+  @@map("whatsapp_messages")
+}
+
+model WhatsAppConfig {
+  id                  String    @id @default(uuid())
+  tenantId            String    @unique
+  phoneNumberId       String
+  businessAccountId   String?
+  accessToken         String
+  appSecret           String?
+  webhookVerifyToken  String?
+  isActive            Boolean   @default(true)
+  isVerified          Boolean   @default(false)
+  messagesSentToday   Int       @default(0)
+  messagesSentDate    String?
+  connectedAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("whatsapp_configs")
+}
+
+model WhatsAppTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  body      String
+  category  String   @default("MARKETING")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("whatsapp_templates")
+}

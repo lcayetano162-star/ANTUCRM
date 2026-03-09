@@ -1,0 +1,77 @@
+// ============================================
+// EXTENSIONES AL SCHEMA - Modelos Completos
+// Agregar al final de schema.prisma
+// ============================================
+
+// ============================================
+// MODELOS DE INTERACTIONS (ACTUALIZADOS)
+// ============================================
+
+model InteractionEvent {
+  id            String   @id @default(uuid())
+  interactionId String
+  tenantId      String
+  eventType     String
+  eventData     Json?
+  provider      String   @default("unknown")
+  createdAt     DateTime @default(now())
+
+  @@index([interactionId])
+  @@index([tenantId, createdAt])
+  @@map("interaction_events")
+}
+
+// ============================================
+// MODELOS DE WHATSAPP (ACTUALIZADOS)
+// ============================================
+
+model WhatsAppConfig {
+  id                  String    @id @default(uuid())
+  tenantId            String    @unique
+  phoneNumberId       String
+  businessAccountId   String?
+  accessToken         String
+  appSecret           String?
+  webhookVerifyToken  String?
+  isActive            Boolean   @default(true)
+  isVerified          Boolean   @default(false)
+  messagesSentToday   Int       @default(0)
+  messagesSentDate    String?
+  connectedAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("whatsapp_configs")
+}
+
+// Campos adicionales para WhatsAppMessage (agregar al modelo existente)
+// messageType   String    @default("text")
+// senderName    String?
+// errorCode     String?
+// errorMessage  String?
+// deletedAt     DateTime?
+
+// ============================================
+// MODELOS DE EMAIL (CONFIGURACIÓN SMTP)
+// ============================================
+
+model EmailConfig {
+  id            String   @id @default(uuid())
+  tenantId      String   @unique
+  smtpHost      String
+  smtpPort      Int
+  smtpSecure    Boolean  @default(true)
+  smtpUser      String
+  smtpPassword  String
+  fromEmail     String
+  fromName      String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("email_configs")
+}

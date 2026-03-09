@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANTU CRM - Multi-Tenant</title>
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+               script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+               font-src 'self' https://fonts.gstatic.com;
+               img-src 'self' data: https: blob:;
+               connect-src 'self' http://161.35.139.197 https://api.antucrm.com https://*.antucrm.com;
+               media-src 'self';
+               object-src 'none';
+               frame-src 'none';
+               frame-ancestors 'none';
+               base-uri 'self';
+               form-action 'self';">
+
+  <!-- X-Frame-Options (Clickjacking protection) -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+
+  <!-- X-Content-Type-Options (MIME sniffing protection) -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+  <!-- Referrer Policy -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!-- Permissions Policy -->
+  <meta http-equiv="Permissions-Policy"
+    content="geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()">
+
+  <!-- HSTS disabled for IP access -->
+
+  <!-- DNS Prefetch Control -->
+  <meta http-equiv="X-DNS-Prefetch-Control" content="off">
+
+  <!-- Robots -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- Preconnect to API domain -->
+  <link rel="preconnect" href="https://api.antucrm.com" crossorigin>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+
+  <!-- Security: Disable right-click on sensitive pages (optional) -->
+  <script>
+    // Prevent some basic attacks
+    if (window.top !== window.self) {
+      window.top.location = window.self.location;
+    }
+  </script>
+</body>
+
+</html>

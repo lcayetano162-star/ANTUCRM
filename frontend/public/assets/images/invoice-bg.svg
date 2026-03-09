@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 1123" width="794" height="1123">
+  <!-- Definición de gradientes usando los colores oficiales de ANTU CRM (var(--color-primary) #5ED9CF y var(--color-secondary) #0EA5E9) -->
+  <defs>
+    <linearGradient id="antuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5ED9CF" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0.85" />
+    </linearGradient>
+    <linearGradient id="antuGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5ED9CF" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0.2" />
+    </linearGradient>
+    <linearGradient id="antuGradientLighter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5ED9CF" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0.05" />
+    </linearGradient>
+  </defs>
+
+  <!-- Forma Superior Elegante -->
+  <path d="M0,0 L0,180 C200,300 450,-20 794,180 L794,0 Z" fill="url(#antuGradientLighter)" />
+  <path d="M0,0 L0,110 C250,220 500,20 794,120 L794,0 Z" fill="url(#antuGradientLight)" />
+  <path d="M0,0 L0,50 C300,150 550,0 794,60 L794,0 Z" fill="url(#antuGradient)" />
+
+  <!-- Forma Inferior Elegante -->
+  <path d="M0,1123 L0,1003 C250,913 500,1063 794,963 L794,1123 Z" fill="url(#antuGradientLighter)" />
+  <path d="M0,1123 L0,1053 C300,993 550,1103 794,1033 L794,1123 Z" fill="url(#antuGradientLight)" />
+  <path d="M0,1123 L0,1093 C350,1053 600,1143 794,1073 L794,1123 Z" fill="url(#antuGradient)" />
+</svg>

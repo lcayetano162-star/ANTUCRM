@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /super-admin/
+Disallow: /api/
+Disallow: /settings/
+Allow: /
+
+Sitemap: https://antu.app/sitemap.xml

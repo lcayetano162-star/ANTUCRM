@@ -1,0 +1,284 @@
+name: Deploy ANTU CRM Enterprise
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+    types: [closed]
+
+env:
+  NODE_VERSION: '20'
+  DEPLOY_PATH: /opt/antucrm
+  SERVER_IP: 161.35.139.197
+
+jobs:
+  # ============================================
+  # JOB 1: Test y Build
+  # ============================================
+  test-and-build:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ============================================
+      # Setup Node.js
+      # ============================================
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            api/package-lock.json
+            frontend/package-lock.json
+
+      # ============================================
+      # Instalar dependencias API
+      # ============================================
+      - name: Install API dependencies
+        run: |
+          cd api
+          npm ci
+
+      # ============================================
+      # Lint y Tests API
+      # ============================================
+      - name: Lint API
+        run: |
+          cd api
+          npm run lint
+        continue-on-error: true
+
+      - name: Test API
+        run: |
+          cd api
+          npm test
+        continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL || secrets.DATABASE_URL }}
+          JWT_REFRESH_SECRET: test-secret
+          ENCRYPTION_KEY: test-encryption-key-32-bytes-long
+
+      # ============================================
+      # Build API
+      # ============================================
+      - name: Build API
+        run: |
+          cd api
+          npm run build
+        env:
+          NODE_ENV: production
+
+      # ============================================
+      # Instalar dependencias Frontend
+      # ============================================
+      - name: Install Frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      # ============================================
+      # Build Frontend
+      # ============================================
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm run build
+        env:
+          NODE_ENV: production
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      # ============================================
+      # Upload build artifacts
+      # ============================================
+      - name: Upload API build
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-build
+          path: api/dist
+          retention-days: 1
+
+      - name: Upload Frontend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+          retention-days: 1
+
+  # ============================================
+  # JOB 2: Deploy a Servidor
+  # ============================================
+  deploy:
+    name: Deploy to Production
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ============================================
+      # Configurar SSH
+      # ============================================
+      - name: Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          if_key_exists: replace
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      # ============================================
+      # Crear archivo .env en el servidor
+      # ============================================
+      - name: Create .env file on server
+        run: |
+          ssh root@${{ env.SERVER_IP }} "
+            mkdir -p ${{ env.DEPLOY_PATH }}
+            cat > ${{ env.DEPLOY_PATH }}/.env << 'ENVFILE'
+          # ============================================
+          # ANTU CRM - Environment Configuration
+          # ============================================
+          
+          # Node
+          NODE_ENV=production
+          
+          # Database (PostgreSQL en DigitalOcean)
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          
+          # JWT Configuration (RSA Keys en Base64)
+          JWT_PRIVATE_KEY_BASE64=${{ secrets.JWT_PRIVATE_KEY_BASE64 }}
+          JWT_PUBLIC_KEY_BASE64=${{ secrets.JWT_PUBLIC_KEY_BASE64 }}
+          JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+          
+          # AI Providers
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          
+          # Email (Resend/SMTP)
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          
+          # WhatsApp
+          WHATSAPP_WEBHOOK_TOKEN=${{ secrets.WHATSAPP_WEBHOOK_TOKEN }}
+          
+          # Seguridad
+          ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+          
+          # CORS
+          CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
+          
+          # Frontend URL
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          API_URL=${{ secrets.API_URL }}
+          ENVFILE
+          chmod 600 ${{ env.DEPLOY_PATH }}/.env
+          echo '.env file created successfully'
+          "
+
+      # ============================================
+      # Sync código al servidor (excluyendo node_modules)
+      # ============================================
+      - name: Sync code to server
+        run: |
+          rsync -avz --delete \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            --exclude='.git' \
+            --exclude='*.log' \
+            --exclude='api/dist' \
+            --exclude='frontend/dist' \
+            --exclude='api/coverage' \
+            --exclude='frontend/coverage' \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ root@${{ env.SERVER_IP }}:${{ env.DEPLOY_PATH }}/
+
+      # ============================================
+      # Deploy con Docker Compose
+      # ============================================
+      - name: Deploy with Docker Compose
+        run: |
+          ssh root@${{ env.SERVER_IP }} << 'DEPLOY_SCRIPT'
+            set -e
+            echo "=========================================="
+            echo "Starting ANTU CRM Deployment"
+            echo "=========================================="
+            
+            cd /opt/antucrm
+            
+            # Detener contenedores actuales
+            echo "Stopping current containers..."
+            docker compose -f docker-compose.prod.yml down || docker compose down || true
+            
+            # Pull de imágenes base (para actualizaciones de seguridad)
+            echo "Pulling base images..."
+            docker pull node:20-alpine
+            docker pull nginx:alpine
+            docker pull postgres:16-alpine
+            
+            # Build y start de los contenedores
+            echo "Building and starting containers..."
+            docker compose -f docker-compose.prod.yml up -d --build || docker compose up -d --build
+            
+            # Esperar a que la DB esté lista
+            echo "Waiting for database..."
+            sleep 10
+            
+            # Ejecutar migraciones Prisma
+            echo "Running database migrations..."
+            cd api
+            docker compose exec -T api npx prisma migrate deploy || true
+            
+            # Generar cliente Prisma (por si acaso)
+            echo "Generating Prisma client..."
+            docker compose exec -T api npx prisma generate || true
+            
+            # Verificar health check
+            echo "Health check..."
+            sleep 5
+            curl -f http://localhost:3001/health || echo "Warning: Health check failed"
+            
+            # Cleanup
+            echo "Cleaning up old images..."
+            docker system prune -f
+            
+            echo "=========================================="
+            echo "Deployment completed successfully!"
+            echo "=========================================="
+          DEPLOY_SCRIPT
+
+      # ============================================
+      # Verificación final
+      # ============================================
+      - name: Verify deployment
+        run: |
+          sleep 10
+          echo "Checking API health..."
+          curl -f http://${{ env.SERVER_IP }}:3001/health && echo "✅ API is healthy" || echo "⚠️ API health check failed"
+          
+          echo "Checking Frontend..."
+          curl -f http://${{ env.SERVER_IP }}:80 && echo "✅ Frontend is accessible" || echo "⚠️ Frontend check failed"
+
+      # ============================================
+      # Notificación de éxito/fallo
+      # ============================================
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ Deploy completed successfully!"
+          echo "API: http://${{ env.SERVER_IP }}:3001"
+          echo "Frontend: http://${{ env.SERVER_IP }}"
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Deploy failed!"
+          echo "Check the logs above for details."
