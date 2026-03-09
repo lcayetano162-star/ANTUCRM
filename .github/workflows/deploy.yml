@@ -20,12 +20,9 @@ jobs:
           if_key_exists: replace
 
       - name: Deploy to Server
-        env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
           # Create deploy directory
-          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "mkdir -p /opt/antucrm"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /opt/antucrm"
           
           # Sync files
           rsync -avz --delete \
@@ -33,10 +30,10 @@ jobs:
             --exclude='node_modules' \
             --exclude='dist' \
             -e "ssh -o StrictHostKeyChecking=no" \
-            ./ $SERVER_USER@$SERVER_HOST:/opt/antucrm/
+            ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/opt/antucrm/
           
           # Deploy
-          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             cd /opt/antucrm && \
             docker-compose down || true && \
             docker-compose up -d --build
