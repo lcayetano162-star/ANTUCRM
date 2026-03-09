@@ -42,7 +42,7 @@ jobs:
       - name: Install API dependencies
         run: |
           cd api
-          npm ci
+          npm install --legacy-peer-deps
 
       # ============================================
       # Lint y Tests API
@@ -79,7 +79,7 @@ jobs:
       - name: Install Frontend dependencies
         run: |
           cd frontend
-          npm ci
+          npm install --legacy-peer-deps
 
       # ============================================
       # Build Frontend
