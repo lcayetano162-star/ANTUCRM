@@ -82,12 +82,17 @@ jobs:
           npm install --legacy-peer-deps
 
       # ============================================
-      # Build Frontend
+      # Fix permissions and Build Frontend
       # ============================================
+      - name: Fix vite permissions
+        run: |
+          cd frontend
+          chmod +x node_modules/.bin/vite || true
+          
       - name: Build Frontend
         run: |
           cd frontend
-          npm run build
+          npx vite build
         env:
           NODE_ENV: production
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
