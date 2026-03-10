@@ -566,16 +566,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           'VIEWER': 'SALES_REP',
         };
 
-        const frontendRole = roleMap[response.user.role] || 'SALES_REP';
+        const user = response.user!;
+        const frontendRole = roleMap[user.role] || 'SALES_REP';
 
         authenticatedUser = {
-          id: response.user.id,
-          email: response.user.email,
-          firstName: response.user.firstName,
-          lastName: response.user.lastName,
-          fullName: `${response.user.firstName} ${response.user.lastName}`.trim(),
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: `${user.firstName} ${user.lastName}`.trim(),
           role: frontendRole,
-          tenantId: response.user.tenantId,
+          tenantId: user.tenantId,
           tenantName: 'ANTÜ CRM',
           plan: 'BUSINESS',
           isActive: true,
