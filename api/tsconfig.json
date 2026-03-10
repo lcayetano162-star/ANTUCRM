@@ -29,5 +29,7 @@
       "@gemini/*": ["src/gemini/*"],
       "@health/*": ["src/health/*"]
     }
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }
