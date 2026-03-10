@@ -23,7 +23,7 @@ COPY . .
 RUN npx prisma generate
 
 # Build de la aplicación
-RUN npm run build
+RUN npx nest build
 
 # Exponer puerto
 EXPOSE 3001
