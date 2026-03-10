@@ -9,14 +9,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bodyParser: true,
-    rawBody: true,
-  });
-
-  // Límite de tamaño de body configurado en NestJS
-  app.useBodyParser('json', { limit: '2mb' });
-  app.useBodyParser('urlencoded', { extended: true, limit: '2mb' });
+  const app = await NestFactory.create(AppModule);
 
   // Seguridad
   app.use(helmet({
