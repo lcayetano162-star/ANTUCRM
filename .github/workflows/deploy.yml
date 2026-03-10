@@ -229,7 +229,11 @@ jobs:
             
             # Detener contenedores actuales
             echo "Stopping current containers..."
-            docker compose -f docker-compose.prod.yml down 2>/dev/null || true
+            docker compose -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
+            docker compose down --remove-orphans 2>/dev/null || true
+            
+            # Forzar limpieza de contenedores huérfanos si existen
+            docker rm -f antu-api antu-frontend antu-redis 2>/dev/null || true
             
             # Limpiar caché de build anterior si existe
             echo "Cleaning build cache..."
