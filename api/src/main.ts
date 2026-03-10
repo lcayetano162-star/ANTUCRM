@@ -11,23 +11,19 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Seguridad
   app.use(helmet());
   app.use(compression());
   app.use(cookieParser());
 
-  // CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
+    origin: ['http://antucrm.com', 'http://www.antucrm.com', 'http://161.35.139.197', 'http://161.35.139.197:80'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
   });
 
-  // Prefijo global
   app.setGlobalPrefix('api/v1');
 
-  // Pipes de validación
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -39,17 +35,13 @@ async function bootstrap() {
     }),
   );
 
-  // Filtros de excepciones
   app.useGlobalFilters(new HttpExceptionFilter());
-
-  // Interceptores
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // Documentación Swagger — solo en desarrollo
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('ANTU CRM API')
-      .setDescription('API del sistema ANTU CRM para Canon RD')
+      .setDescription('API del sistema ANTU CRM')
       .setVersion('1.0.0')
       .addBearerAuth()
       .build();
@@ -58,23 +50,10 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
 
-  // Puerto
   const port = process.env.PORT || 3001;
-
   await app.listen(port);
 
-  console.log(`
-  ╔══════════════════════════════════════════════════════════╗
-  ║                                                          ║
-  ║   🚀 ANTU CRM API - Canon RD                             ║
-  ║                                                          ║
-  ╠══════════════════════════════════════════════════════════╣
-  ║   📡 Server running on: http://localhost:${port}          ║
-  ║   📚 Documentation:     http://localhost:${port}/api/docs ║
-  ║   💓 Health Check:      http://localhost:${port}/health   ║
-  ║                                                          ║
-  ╚══════════════════════════════════════════════════════════╝
-  `);
+  console.log('Server running on port ' + port);
 }
 
 bootstrap();
