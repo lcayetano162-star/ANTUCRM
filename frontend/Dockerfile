@@ -18,7 +18,7 @@ ENV VITE_API_URL=${VITE_API_URL}
 COPY package*.json ./
 
 # Instalar dependencias
-RUN npm ci && npm cache clean --force
+RUN npm install --legacy-peer-deps && npm cache clean --force
 
 # Copiar código fuente
 COPY . .
