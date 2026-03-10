@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import {
   ArrowLeft, Phone, Mail, Calendar, DollarSign, FileText,
   AlertTriangle, CheckCircle, TrendingDown, Building,
-  MessageSquare, HandshakeIcon, Scale, Send
+  MessageSquare, Handshake, Scale, Send
 } from 'lucide-react';
 import type { Receivable, CollectionAction } from '@/types/receivables';
 
@@ -89,7 +89,7 @@ export function CollectionManagement({ receivable, onBack, onAddAction, onRegist
       case 'PAYMENT_RECEIVED':
         return <DollarSign className="h-4 w-4" />;
       case 'PAYMENT_AGREEMENT':
-        return <HandshakeIcon className="h-4 w-4" />;
+        return <Handshake className="h-4 w-4" />;
       default:
         return <MessageSquare className="h-4 w-4" />;
     }
@@ -199,7 +199,7 @@ export function CollectionManagement({ receivable, onBack, onAddAction, onRegist
                 {receivable.paymentAgreement && (
                   <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                     <p className="font-medium text-indigo-900 flex items-center gap-2">
-                      <HandshakeIcon className="h-4 w-4" />
+                      <Handshake className="h-4 w-4" />
                       Acuerdo de Pago Activo
                     </p>
                     <p className="text-sm text-indigo-700 mt-1">
@@ -468,7 +468,7 @@ export function CollectionManagement({ receivable, onBack, onAddAction, onRegist
                 </Dialog>
 
                 <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2">
-                  <HandshakeIcon className="h-6 w-6" />
+                  <Handshake className="h-6 w-6" />
                   <span>Acuerdo de Pago</span>
                 </Button>
 

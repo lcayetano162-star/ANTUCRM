@@ -1,0 +1,36 @@
+import { PrismaService } from '../../prisma/prisma.service';
+import { ContactsAIService } from './contacts-ai.service';
+import { AuditService } from '../../audit/audit.service';
+import { ContactsDashboard, ContactCard, ContactDetail, ContactAIInsight, BulkActionResult, ContactScoringResult, NextBestAction } from '../types/contacts.types';
+import { CreateContactDto } from '../dto/create-contact.dto';
+import { UpdateContactDto } from '../dto/update-contact.dto';
+import { ContactQueryDto } from '../dto/contact-query.dto';
+import { BulkActionDto } from '../dto/bulk-action.dto';
+import { UserRole } from '../../auth/types/auth.types';
+export declare class ContactsService {
+    private readonly prisma;
+    private readonly aiService;
+    private readonly auditService;
+    constructor(prisma: PrismaService, aiService: ContactsAIService, auditService: AuditService);
+    getDashboard(tenantId: string, userId: string, userRole: UserRole, params: ContactQueryDto): Promise<ContactsDashboard>;
+    getContactById(tenantId: string, contactId: string, userId: string, userRole: UserRole): Promise<ContactDetail>;
+    createContact(tenantId: string, userId: string, data: CreateContactDto): Promise<ContactCard>;
+    updateContact(tenantId: string, contactId: string, userId: string, data: UpdateContactDto): Promise<ContactCard>;
+    deleteContact(tenantId: string, contactId: string, userId: string, userRole: UserRole): Promise<void>;
+    bulkActions(tenantId: string, userId: string, userRole: UserRole, data: BulkActionDto): Promise<BulkActionResult>;
+    getContactInsights(tenantId: string, contactId: string, userId: string, userRole: UserRole): Promise<ContactAIInsight[]>;
+    scoreContact(tenantId: string, contactId: string, userId: string, userRole: UserRole): Promise<ContactScoringResult>;
+    getNextBestAction(tenantId: string, contactId: string, userId: string, userRole: UserRole): Promise<NextBestAction>;
+    searchContacts(tenantId: string, userId: string, userRole: UserRole, query: string, limit?: number): Promise<ContactCard[]>;
+    private getKPIs;
+    private getAvailableFilters;
+    private getContactsList;
+    private getContactsCount;
+    private getRoleBasedWhereClause;
+    private mapToContactCard;
+    private mapToContactActivity;
+    private mapToContactOpportunity;
+    private mapToContactNote;
+    private formatStatusLabel;
+    private getAvatarColor;
+}
