@@ -82,10 +82,7 @@ export class InteractionsService {
 
     const where: any = {
       tenantId,
-      OR: [
-        { clientId },
-        { contact: { clientId } }
-      ],
+      clientId,
     };
 
     if (!includePrivate) {
@@ -129,10 +126,7 @@ export class InteractionsService {
     };
 
     if (clientId) {
-      where.OR = [
-        { clientId },
-        { contact: { clientId } }
-      ];
+      where.clientId = clientId;
     }
 
     return this.prisma.interaction.findMany({
@@ -150,10 +144,7 @@ export class InteractionsService {
     const interactions = await this.prisma.interaction.findMany({
       where: {
         tenantId,
-        OR: [
-          { clientId },
-          { contact: { clientId } }
-        ],
+        clientId,
         isPrivate: false,
       },
       orderBy: { createdAt: 'desc' },
@@ -164,21 +155,19 @@ export class InteractionsService {
     const total = await this.prisma.interaction.count({
       where: {
         tenantId,
-        OR: [
-          { clientId },
-          { contact: { clientId } }
-        ],
+        clientId,
         isPrivate: false,
       },
     });
 
     const lastInteraction = interactions[0];
 
+    const aiInsight = lastInteraction?.aiInsight as any;
     return {
       total,
       lastInteraction: lastInteraction?.createdAt || null,
-      sentiment: (lastInteraction?.aiInsight as AIInsight)?.sentiment || null,
-      aiSummary: (lastInteraction?.aiInsight as AIInsight)?.summary || null,
+      sentiment: aiInsight?.sentiment || null,
+      aiSummary: aiInsight?.summary || null,
     };
   }
 
