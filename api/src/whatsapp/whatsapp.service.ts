@@ -286,14 +286,13 @@ export class WhatsAppService {
     });
 
     if (!contact) {
-      contact = await this.prisma.contact.create({
-        data: {
-          tenantId: config.tenantId,
-          firstName: name,
-          phone: from,
-          source: 'whatsapp',
-        } as any,
-      });
+      const contactData: any = {
+        tenantId: config.tenantId,
+        firstName: name,
+        phone: from,
+        source: 'whatsapp',
+      };
+      contact = await this.prisma.contact.create({ data: contactData });
     }
 
     let content = '';
