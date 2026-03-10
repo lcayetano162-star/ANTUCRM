@@ -69,7 +69,8 @@ jobs:
       - name: Build API
         run: |
           cd api
-          npm run build
+          chmod +x node_modules/.bin/* 2>/dev/null || true
+          npx nest build
         env:
           NODE_ENV: production
 

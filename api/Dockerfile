@@ -19,7 +19,8 @@ RUN npm install --force && npm cache clean --force
 # Copiar código fuente
 COPY . .
 
-# Generar cliente Prisma
+# Fix permisos de binarios y generar cliente Prisma
+RUN chmod +x node_modules/.bin/* 2>/dev/null || true
 RUN npx prisma generate
 
 # Build de la aplicación
