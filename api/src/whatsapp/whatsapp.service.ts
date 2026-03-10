@@ -29,7 +29,7 @@ export class WhatsAppService {
   ) {}
 
   async getConfig(tenantId: string) {
-    return this.prisma.whatsappConfig.findUnique({
+    return this.prisma.whatsAppConfig.findUnique({
       where: { tenantId },
     });
   }
@@ -55,7 +55,7 @@ export class WhatsAppService {
     }
 
     // Guardar configuración
-    return this.prisma.whatsappConfig.upsert({
+    return this.prisma.whatsAppConfig.upsert({
       where: { tenantId },
       create: {
         tenantId,
@@ -82,7 +82,7 @@ export class WhatsAppService {
   }
 
   async disconnect(tenantId: string) {
-    return this.prisma.whatsappConfig.update({
+    return this.prisma.whatsAppConfig.update({
       where: { tenantId },
       data: { isActive: false, updatedAt: new Date() },
     });
@@ -104,7 +104,7 @@ export class WhatsAppService {
     }
 
     // Crear registro en BD
-    const messageRecord = await this.prisma.whatsappMessage.create({
+    const messageRecord = await this.prisma.whatsAppMessage.create({
       data: {
         tenantId,
         contactId: data.contactId,
@@ -158,7 +158,7 @@ export class WhatsAppService {
       const waMessageId = response.data.messages?.[0]?.id;
 
       // Actualizar con éxito
-      await this.prisma.whatsappMessage.update({
+      await this.prisma.whatsAppMessage.update({
         where: { id: messageRecord.id },
         data: {
           messageId: waMessageId,
@@ -175,7 +175,7 @@ export class WhatsAppService {
     } catch (error: any) {
       const whatsappError = this.parseWhatsAppError(error);
 
-      await this.prisma.whatsappMessage.update({
+      await this.prisma.whatsAppMessage.update({
         where: { id: messageRecord.id },
         data: {
           status: 'FAILED',
@@ -205,7 +205,7 @@ export class WhatsAppService {
     }
 
     const [messages, total] = await Promise.all([
-      this.prisma.whatsappMessage.findMany({
+      this.prisma.whatsAppMessage.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         take: limit,
@@ -214,7 +214,7 @@ export class WhatsAppService {
           contact: { select: { id: true, firstName: true, lastName: true } },
         },
       }),
-      this.prisma.whatsappMessage.count({ where }),
+      this.prisma.whatsAppMessage.count({ where }),
     ]);
 
     return {
@@ -224,7 +224,7 @@ export class WhatsAppService {
   }
 
   async getConversations(tenantId: string) {
-    const messages = await this.prisma.whatsappMessage.findMany({
+    const messages = await this.prisma.whatsAppMessage.findMany({
       where: { tenantId, deletedAt: null },
       orderBy: { createdAt: 'desc' },
       distinct: ['phone'],
@@ -258,7 +258,7 @@ export class WhatsAppService {
       return null;
     }
 
-    const config = await this.prisma.whatsappConfig.findFirst({
+    const config = await this.prisma.whatsAppConfig.findFirst({
       where: { webhookVerifyToken: token, isActive: true },
     });
 
@@ -275,7 +275,7 @@ export class WhatsAppService {
     const from = message.from;
     const name = value.contacts?.[0]?.profile?.name || 'Unknown';
 
-    const config = await this.prisma.whatsappConfig.findFirst({
+    const config = await this.prisma.whatsAppConfig.findFirst({
       where: { phoneNumberId },
     });
 
@@ -304,7 +304,7 @@ export class WhatsAppService {
     else if (message.image) content = message.image.caption || 'Image received';
     else if (message.document) content = `Document: ${message.document.filename}`;
 
-    await this.prisma.whatsappMessage.create({
+    await this.prisma.whatsAppMessage.create({
       data: {
         tenantId: config.tenantId,
         contactId: contact.id,
@@ -329,7 +329,7 @@ export class WhatsAppService {
       updateData.readAt = new Date();
     }
 
-    await this.prisma.whatsappMessage.updateMany({
+    await this.prisma.whatsAppMessage.updateMany({
       where: { messageId: status.id },
       data: updateData,
     });
@@ -345,7 +345,7 @@ export class WhatsAppService {
     const today = new Date().toISOString().split('T')[0];
     
     if (config.messagesSentDate !== today) {
-      await this.prisma.whatsappConfig.update({
+      await this.prisma.whatsAppConfig.update({
         where: { tenantId },
         data: { messagesSentToday: 0, messagesSentDate: today },
       });
@@ -358,7 +358,7 @@ export class WhatsAppService {
   }
 
   private async incrementRateLimit(tenantId: string) {
-    await this.prisma.whatsappConfig.update({
+    await this.prisma.whatsAppConfig.update({
       where: { tenantId },
       data: { messagesSentToday: { increment: 1 } },
     });
