@@ -5,7 +5,7 @@ import type { UserConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }): UserConfig => ({
-  base: './',
+  base: '/',
 
   // ═══════════════════════════════════════════════════════════════════════════════
   // PLUGINS
