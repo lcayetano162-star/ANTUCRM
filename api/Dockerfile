@@ -4,7 +4,7 @@
 # ============================================
 
 # --------------------------------------------
-# Stage 1: Dependencies
+# Stage 1: Dependencies (incluye devDependencies)
 # --------------------------------------------
 FROM node:20-alpine AS dependencies
 
@@ -14,8 +14,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalar dependencias
-RUN npm ci --only=production && npm cache clean --force
+# Instalar TODAS las dependencias (incluyendo devDependencies para build)
+RUN npm install --legacy-peer-deps && npm cache clean --force
 
 # --------------------------------------------
 # Stage 2: Builder
@@ -27,6 +27,7 @@ WORKDIR /app
 # Copiar dependencias
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=dependencies /app/package*.json ./
+COPY --from=dependencies /app/prisma ./prisma
 
 # Copiar código fuente
 COPY . .
