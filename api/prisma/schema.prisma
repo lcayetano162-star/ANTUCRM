@@ -162,6 +162,7 @@ model Contact {
   isMainContact Boolean       @default(false)
   status        ContactStatus @default(PROSPECT)
   score         Int?          @default(0)
+  source        String?       @default("manual")
   avatar        String?
   deletedAt     DateTime?
   createdAt     DateTime      @default(now())
