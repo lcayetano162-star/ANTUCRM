@@ -50,11 +50,13 @@ model Tenant {
   serviceTickets     ServiceTicket[]
   serviceWorkOrders  ServiceWorkOrder[]
   campaigns          Campaign[]
+  emailConfigs       EmailConfig[]
   emailMessages      EmailMessage[]
   govOpportunities   GovOpportunity[]
   interactions       Interaction[]
-  whatsappMessages   WhatsAppMessage[]
-  whatsappTemplates  WhatsAppTemplate[]
+  whatsAppConfigs    WhatsAppConfig[]
+  whatsAppMessages   WhatsAppMessage[]
+  whatsAppTemplates  WhatsAppTemplate[]
 
   @@map("tenants")
 }
@@ -1240,8 +1242,8 @@ model Interaction {
   clientId      String?
   fromAddress   String?
   toAddress     String?
-  ccAddresses   String[]
-  bccAddresses  String[]
+  ccAddresses   Json?
+  bccAddresses  Json?
   provider      String          @default("system")
   externalId    String?         @unique
   threadId      String?
