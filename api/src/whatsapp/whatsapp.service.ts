@@ -112,7 +112,6 @@ export class WhatsAppService {
         direction: 'OUTBOUND',
         body: data.message,
         status: 'SENT',
-        messageType: data.templateName ? 'template' : 'text',
       },
     });
 
@@ -292,13 +291,12 @@ export class WhatsAppService {
           tenantId: config.tenantId,
           firstName: name,
           phone: from,
-          source: 'whatsapp',
         },
       });
     }
 
     let content = '';
-    let messageType = message.type;
+    let msgType = message.type;
 
     if (message.text) content = message.text.body;
     else if (message.image) content = message.image.caption || 'Image received';
@@ -311,7 +309,6 @@ export class WhatsAppService {
         messageId: message.id,
         phone: from,
         direction: 'INBOUND',
-        messageType,
         body: content,
         status: 'DELIVERED',
         senderName: name,
