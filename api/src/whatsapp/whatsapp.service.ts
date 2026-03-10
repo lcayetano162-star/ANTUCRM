@@ -26,7 +26,7 @@ export class WhatsAppService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   async getConfig(tenantId: string) {
     return this.prisma.whatsAppConfig.findUnique({
@@ -46,7 +46,7 @@ export class WhatsAppService {
       const response = await firstValueFrom(
         this.httpService.get(`${this.apiBase}/${data.phoneNumberId}?access_token=${data.accessToken}`)
       );
-      
+
       if (!response.data) {
         throw new HttpException('Invalid WhatsApp credentials', HttpStatus.BAD_REQUEST);
       }
@@ -291,7 +291,8 @@ export class WhatsAppService {
           tenantId: config.tenantId,
           firstName: name,
           phone: from,
-        },
+          source: 'whatsapp',
+        } as any,
       });
     }
 
@@ -340,7 +341,7 @@ export class WhatsAppService {
 
   private async checkRateLimit(tenantId: string, config: any) {
     const today = new Date().toISOString().split('T')[0];
-    
+
     if (config.messagesSentDate !== today) {
       await this.prisma.whatsAppConfig.update({
         where: { tenantId },
@@ -367,7 +368,7 @@ export class WhatsAppService {
     const errorMessage = response?.error?.message || error.message || 'Unknown error';
 
     const retryableCodes = ['ECONNRESET', 'ETIMEDOUT', 'RATE_LIMIT', 80007];
-    const isRetryable = retryableCodes.some(code => 
+    const isRetryable = retryableCodes.some(code =>
       errorCode.toString().includes(code.toString())
     );
 
