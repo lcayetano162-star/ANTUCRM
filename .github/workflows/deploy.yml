@@ -236,7 +236,8 @@ jobs:
             
             # Build y start de los contenedores
             echo "Building and starting containers..."
-            docker compose -f docker-compose.prod.yml up -d --build --no-cache
+            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml up -d
             
             # Esperar a que el API esté listo
             echo "Waiting for API to be ready..."
