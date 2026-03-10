@@ -1,12 +1,11 @@
 # ============================================
-# ANTU CRM API - Dockerfile
-# Multi-stage build para producción
+# ANTU CRM API - Dockerfile (Simplificado)
 # ============================================
 
-# --------------------------------------------
-# Stage 1: Dependencies (incluye devDependencies)
-# --------------------------------------------
-FROM node:20-alpine AS dependencies
+FROM node:20-alpine
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache wget
 
 WORKDIR /app
 
@@ -14,20 +13,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalar TODAS las dependencias (incluyendo devDependencies para build)
-RUN npm install --legacy-peer-deps && npm cache clean --force
-
-# --------------------------------------------
-# Stage 2: Builder
-# --------------------------------------------
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copiar dependencias
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=dependencies /app/package*.json ./
-COPY --from=dependencies /app/prisma ./prisma
+# Instalar dependencias (incluyendo devDependencies para build)
+RUN npm install --force && npm cache clean --force
 
 # Copiar código fuente
 COPY . .
@@ -37,29 +24,6 @@ RUN npx prisma generate
 
 # Build de la aplicación
 RUN npm run build
-
-# --------------------------------------------
-# Stage 3: Production
-# --------------------------------------------
-FROM node:20-alpine AS production
-
-# Instalar dependencias del sistema necesarias
-RUN apk add --no-cache wget ca-certificates
-
-WORKDIR /app
-
-# Crear usuario no-root para seguridad
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001
-
-# Copiar archivos necesarios desde builder
-COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
-COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
-
-# Cambiar a usuario no-root
-USER nestjs
 
 # Exponer puerto
 EXPOSE 3001

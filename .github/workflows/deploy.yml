@@ -194,15 +194,16 @@ jobs:
       # ============================================
       - name: Sync code to server
         run: |
+          # Asegurar que los Dockerfile existen
+          ls -la api/Dockerfile
+          ls -la frontend/Dockerfile
+          
           rsync -avz --delete \
             --exclude='node_modules' \
             --exclude='.env' \
             --exclude='.git' \
             --exclude='*.log' \
-            --exclude='api/dist' \
-            --exclude='frontend/dist' \
-            --exclude='api/coverage' \
-            --exclude='frontend/coverage' \
+            --exclude='coverage' \
             -e "ssh -o StrictHostKeyChecking=no" \
             ./ root@${{ env.SERVER_IP }}:${{ env.DEPLOY_PATH }}/
 
@@ -219,44 +220,47 @@ jobs:
             
             cd /opt/antucrm
             
+            # Verificar que los archivos existen
+            echo "Verificando archivos necesarios..."
+            ls -la docker-compose.prod.yml || exit 1
+            ls -la api/Dockerfile || exit 1
+            ls -la frontend/Dockerfile || exit 1
+            
             # Detener contenedores actuales
             echo "Stopping current containers..."
-            docker compose -f docker-compose.prod.yml down || docker compose down || true
+            docker compose -f docker-compose.prod.yml down 2>/dev/null || true
             
-            # Pull de imágenes base (para actualizaciones de seguridad)
-            echo "Pulling base images..."
-            docker pull node:20-alpine
-            docker pull nginx:alpine
-            docker pull postgres:16-alpine
+            # Limpiar caché de build anterior si existe
+            echo "Cleaning build cache..."
+            docker builder prune -f 2>/dev/null || true
             
             # Build y start de los contenedores
             echo "Building and starting containers..."
-            docker compose -f docker-compose.prod.yml up -d --build || docker compose up -d --build
+            docker compose -f docker-compose.prod.yml up -d --build --no-cache
             
-            # Esperar a que la DB esté lista
-            echo "Waiting for database..."
-            sleep 10
+            # Esperar a que el API esté listo
+            echo "Waiting for API to be ready..."
+            sleep 15
             
             # Ejecutar migraciones Prisma
             echo "Running database migrations..."
-            cd api
-            docker compose exec -T api npx prisma migrate deploy || true
+            docker compose -f docker-compose.prod.yml exec -T api npx prisma migrate deploy || echo "Migrations skipped or failed"
             
             # Generar cliente Prisma (por si acaso)
             echo "Generating Prisma client..."
-            docker compose exec -T api npx prisma generate || true
+            docker compose -f docker-compose.prod.yml exec -T api npx prisma generate || echo "Prisma generate skipped"
             
             # Verificar health check
             echo "Health check..."
             sleep 5
-            curl -f http://localhost:3001/health || echo "Warning: Health check failed"
+            curl -f http://localhost:3001/health 2>/dev/null && echo "✅ API is healthy" || echo "⚠️ API health check failed"
             
             # Cleanup
-            echo "Cleaning up old images..."
-            docker system prune -f
+            echo "Cleaning up..."
+            docker system prune -f 2>/dev/null || true
             
             echo "=========================================="
-            echo "Deployment completed successfully!"
+            echo "Deployment completed!"
             echo "=========================================="
           DEPLOY_SCRIPT
 
