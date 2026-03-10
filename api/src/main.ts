@@ -4,48 +4,21 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import * as express from 'express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bodyParser: false, // Disable built-in body parser to avoid Express deprecation error
-  });
-
-  // Manual body parser (after NestJS init)
-  app.use(express.json({ limit: '2mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+  const app = await NestFactory.create(AppModule);
 
   // Seguridad
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        fontSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"],
-        frameAncestors: ["'self'"],
-        baseUri: ["'self'"],
-        objectSrc: ["'none'"],
-        formAction: ["'self'"],
-      },
-    },
-    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-    noSniff: true,
-    xssFilter: true,
-    permittedCrossDomainPolicies: { permittedPolicies: 'none' },
-    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-  }));
+  app.use(helmet());
   app.use(compression());
   app.use(cookieParser());
 
   // CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
@@ -79,11 +52,6 @@ async function bootstrap() {
       .setDescription('API del sistema ANTU CRM para Canon RD')
       .setVersion('1.0.0')
       .addBearerAuth()
-      .addTag('Auth', 'Autenticación y autorización')
-      .addTag('Dashboard', 'Dashboard de ventas con IA')
-      .addTag('Contacts - Clientes', 'Gestión de clientes y contactos')
-      .addTag('Inventory', 'Inventario inteligente con IA')
-      .addTag('Health', 'Health checks y métricas')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
