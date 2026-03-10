@@ -31,7 +31,7 @@ import { Global } from '@nestjs/common';
             secret: jwtSecret,
             signOptions: {
               algorithm: 'HS256' as const,
-              expiresIn: configService.get<string>('JWT_EXPIRATION', '8h'),
+              expiresIn: configService.get<string>('JWT_EXPIRATION', '8h') as any,
             },
           };
         }
@@ -41,7 +41,7 @@ import { Global } from '@nestjs/common';
           publicKey,
           signOptions: {
             algorithm: 'RS256' as const,
-            expiresIn: configService.get<string>('JWT_EXPIRATION', '8h'),
+            expiresIn: configService.get<string>('JWT_EXPIRATION', '8h') as any,
           },
         };
       },
